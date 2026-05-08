@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ALERTA — UMAA IMSS Aguascalientes</title>
+<style>
+:root{
+  --rojo:#cc2222;
+  --rojo-light:#fff0f0;
+  --rojo-mid:#ffd5d5;
+  --verde:#1a8a4a;
+  --verde-light:#f0fff6;
+  --verde-mid:#c8f0da;
+  --gris:#f4f5f7;
+  --gris2:#e8eaed;
+  --gris3:#c4c8d0;
+  --text:#1a1a2e;
+  --text2:#4a4a6a;
+  --text3:#8888aa;
+  --border:#e0e4ec;
+  --white:#ffffff;
+  --shadow:0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--gris);color:var(--text);min-height:100vh}
+
+/* ===== LOGIN ===== */
+#loginPage{position:fixed;inset:0;background:linear-gradient(135deg,#fff 0%,#f8f0f0 100%);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.login-card{background:var(--white);border-radius:24px;padding:32px 28px;width:100%;max-width:380px;box-shadow:var(--shadow-lg);text-align:center}
+.login-logo{width:76px;height:76px;background:var(--rojo);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px;box-shadow:0 4px 16px rgba(204,34,34,0.3)}
+.login-title{font-size:26px;font-weight:900;letter-spacing:5px;color:var(--rojo);margin-bottom:4px}
+.login-sub{color:var(--text3);font-size:11px;letter-spacing:1px;margin-bottom:24px}
+.canal-box{background:var(--verde-light);border:1.5px solid var(--verde-mid);border-radius:14px;padding:14px;margin-bottom:18px}
+.canal-label{color:var(--verde);font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px}
+.canal-num{font-size:34px;font-weight:900;color:var(--verde);letter-spacing:8px;font-family:monospace}
+.canal-hint{color:#4aaa77;font-size:10px;margin-top:5px}
+.input-row{display:flex;gap:8px;margin-bottom:12px}
+.inp{width:100%;background:var(--gris);border:1.5px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-size:16px;outline:none;-webkit-appearance:none;margin-bottom:0}
+.inp:focus{border-color:var(--rojo);background:var(--white)}
+.sel{width:100%;background:var(--gris);border:1.5px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-size:15px;outline:none;-webkit-appearance:none;margin-bottom:12px}
+.btn-nuevo{background:var(--verde-light);border:1.5px solid var(--verde);border-radius:12px;padding:13px 14px;color:var(--verde);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+.btn-entrar{width:100%;background:var(--rojo);border:none;border-radius:14px;padding:17px;color:#fff;font-size:17px;font-weight:800;cursor:pointer;margin-top:4px;box-shadow:0 4px 16px rgba(204,34,34,0.3);letter-spacing:1px}
+.btn-entrar:active{transform:scale(0.98);background:#aa1818}
+
+/* ===== TOPBAR ===== */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.topbar-icon{width:34px;height:34px;background:var(--rojo);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.topbar-title{font-size:18px;font-weight:900;letter-spacing:3px;color:var(--rojo)}
+.topbar-sub{font-size:9px;color:var(--text3);letter-spacing:1px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.canal-pill{background:var(--verde-light);border:1px solid var(--verde-mid);border-radius:99px;padding:5px 12px;font-size:11px;color:var(--verde);font-weight:700;display:flex;align-items:center;gap:5px}
+.canal-dot{width:6px;height:6px;border-radius:50%;background:var(--verde);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.user-chip{background:var(--gris);border:1px solid var(--border);border-radius:99px;padding:5px 12px 5px 5px;display:flex;align-items:center;gap:8px}
+.user-av{width:26px;height:26px;border-radius:50%;background:var(--rojo);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff}
+.user-nm{font-size:11px;color:var(--text2);font-weight:600}
+
+/* ===== APP ===== */
+#app{display:none;min-height:100vh;padding-bottom:80px}
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr 1fr;padding:8px 0 12px;z-index:90;box-shadow:0 -2px 12px rgba(0,0,0,0.06)}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px}
+.bn-item span{font-size:10px;color:var(--text3);font-weight:500}
+.bn-item .bn-icon{font-size:24px}
+.bn-item.active span{color:var(--rojo);font-weight:700}
+
+/* ===== SCREENS ===== */
+.screen{display:none;padding:20px 16px}
+.screen.active{display:block}
+.page-title{font-size:22px;font-weight:900;color:var(--text);margin-bottom:4px}
+.page-sub{color:var(--text3);font-size:12px;margin-bottom:20px}
+
+/* ===== CARDS ===== */
+.card{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card-rojo{border-color:var(--rojo-mid);background:var(--rojo-light)}
+.card-verde{border-color:var(--verde-mid);background:var(--verde-light)}
+
+/* ===== SOS ===== */
+.sos-section{background:linear-gradient(135deg,#fff5f5 0%,#ffe8e8 100%);border:1.5px solid var(--rojo-mid);border-radius:20px;padding:24px 16px;margin-bottom:18px;text-align:center}
+.sos-label{color:#cc6666;font-size:10px;font-weight:700;letter-spacing:3px;margin-bottom:16px}
+.sos-btn{width:170px;height:170px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#e63333,#991111);border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin:0 auto;cursor:pointer;box-shadow:0 0 0 8px rgba(204,34,34,0.12),0 0 0 16px rgba(204,34,34,0.06),0 8px 24px rgba(204,34,34,0.3)}
+.sos-btn:active{transform:scale(0.96)}
+.sos-icon{font-size:54px}
+.sos-text{color:#fff;font-size:13px;font-weight:900;letter-spacing:3px}
+.sos-hint{color:#cc8888;font-size:11px;margin-top:14px;line-height:1.7}
+.sos-sound{color:var(--rojo);font-size:11px;font-weight:800;margin-top:4px}
+
+/* ===== TIPOS GRID ===== */
+.tipos-label{color:var(--text3);font-size:10px;font-weight:700;letter-spacing:2px;margin-bottom:10px}
+.tipos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.tipo-card{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:16px 8px;cursor:pointer;text-align:center;box-shadow:var(--shadow);transition:all 0.15s}
+.tipo-card:active{transform:scale(0.95);background:var(--rojo-light);border-color:var(--rojo)}
+.tipo-card-icon{font-size:30px;display:block;margin-bottom:7px}
+.tipo-card-label{font-size:11px;color:var(--text2);font-weight:600}
+
+/* ===== STATS ===== */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;box-shadow:var(--shadow)}
+.stat-num{font-size:28px;font-weight:900}
+.stat-lbl{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.5px;margin-top:3px}
+
+/* ===== CHAT ===== */
+.chat-wrap{background:var(--white);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.chat-header{background:var(--verde-light);border-bottom:1px solid var(--verde-mid);padding:12px 16px;display:flex;align-items:center;gap:8px}
+.chat-header-title{color:var(--verde);font-size:13px;font-weight:800}
+.chat-messages{padding:14px;min-height:150px;max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;background:#fafffe}
+.msg-sys{background:var(--rojo-light);border:1px solid var(--rojo-mid);border-radius:10px;padding:8px 14px;text-align:center;font-size:11px;color:var(--rojo);font-weight:700}
+.msg-sys.verde{background:var(--verde-light);border-color:var(--verde-mid);color:var(--verde)}
+.msg-out{align-self:flex-end;background:var(--verde);border-radius:16px 16px 4px 16px;padding:10px 14px;max-width:80%}
+.msg-out .msg-text{color:#fff;font-size:13px;line-height:1.5}
+.msg-out .msg-meta{color:rgba(255,255,255,0.7);font-size:10px;margin-top:4px;text-align:right}
+.msg-in{align-self:flex-start;background:var(--white);border:1px solid var(--border);border-radius:16px 16px 16px 4px;padding:10px 14px;max-width:80%}
+.msg-in .msg-name{color:var(--text3);font-size:10px;font-weight:700;margin-bottom:3px}
+.msg-in .msg-text{color:var(--text);font-size:13px;line-height:1.5}
+.msg-in .msg-meta{color:var(--text3);font-size:10px;margin-top:4px}
+.chat-input-row{background:var(--gris);border-top:1px solid var(--border);padding:10px 12px;display:flex;gap:8px;align-items:center}
+.chat-inp{flex:1;background:var(--white);border:1.5px solid var(--border);border-radius:20px;padding:10px 16px;color:var(--text);font-size:14px;outline:none}
+.chat-inp:focus{border-color:var(--verde)}
+.chat-send{width:40px;height:40px;border-radius:50%;background:var(--verde);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;flex-shrink:0;box-shadow:0 2px 8px rgba(26,138,74,0.3)}
+
+/* ===== SIMULACROS ===== */
+.sim-card{background:var(--white);border:1.5px solid var(--border);border-radius:18px;padding:18px;margin-bottom:12px;box-shadow:var(--shadow)}
+.sim-card.hoy{border-color:var(--rojo-mid);background:var(--rojo-light)}
+.sim-card.proximo{border-color:#ffecc8;background:#fffaf0}
+.sim-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px}
+.sim-icon-wrap{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.sim-title{font-size:15px;font-weight:800;color:var(--text)}
+.sim-fecha{font-size:11px;color:var(--text3);margin-top:3px}
+.sim-badge{margin-left:auto;font-size:10px;font-weight:800;padding:5px 12px;border-radius:99px;flex-shrink:0}
+.badge-hoy{background:var(--rojo);color:#fff}
+.badge-prox{background:#ff9800;color:#fff}
+.badge-done{background:var(--gris2);color:var(--text3)}
+.badge-verde{background:var(--verde);color:#fff}
+.sim-meta{display:flex;gap:14px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border)}
+.sim-meta span{font-size:11px;color:var(--text3);font-weight:500}
+.notif-row{display:flex;align-items:center;gap:6px;margin-top:10px;background:var(--verde-light);border:1px solid var(--verde-mid);border-radius:10px;padding:7px 12px}
+.notif-row span{font-size:10px;color:var(--verde);font-weight:600}
+
+/* ===== FORM AGENDAR ===== */
+.form-section{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.form-label{font-size:10px;font-weight:800;color:var(--text3);letter-spacing:1px;display:block;margin-bottom:10px}
+.form-inp{width:100%;background:var(--gris);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:15px;outline:none;margin-bottom:10px;-webkit-appearance:none}
+.form-inp:focus{border-color:var(--rojo);background:var(--white)}
+.form-ta{width:100%;background:var(--gris);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;resize:none;height:72px}
+.form-ta:focus{border-color:var(--rojo);background:var(--white)}
+.tipos-form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px}
+.tipo-form-btn{background:var(--gris);border:1.5px solid var(--border);border-radius:12px;padding:12px 6px;cursor:pointer;text-align:center}
+.tipo-form-btn.sel{border-color:var(--rojo);background:var(--rojo-light)}
+.tipo-form-btn:active{transform:scale(0.95)}
+.tipo-form-icon{font-size:22px;display:block;margin-bottom:4px}
+.tipo-form-label{font-size:10px;color:var(--text2);font-weight:600}
+.chip{display:inline-block;background:var(--gris);border:1.5px solid var(--border);border-radius:99px;padding:6px 14px;font-size:12px;color:var(--text2);cursor:pointer;margin:3px;font-weight:500}
+.chip.on{background:var(--rojo-light);border-color:var(--rojo);color:var(--rojo);font-weight:700}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--gris2)}
+.toggle-row:last-child{border:none}
+.toggle-lbl{font-size:13px;color:var(--text2);display:flex;align-items:center;gap:8px}
+.toggle-on{background:var(--verde-light);border:1.5px solid var(--verde);border-radius:99px;padding:4px 14px;font-size:11px;color:var(--verde);font-weight:700;cursor:pointer}
+.toggle-always{background:var(--verde);border-radius:99px;padding:4px 14px;font-size:11px;color:#fff;font-weight:700}
+.notif-info{background:var(--rojo-light);border:1.5px solid var(--rojo-mid);border-radius:12px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}
+.notif-info span{font-size:12px;color:var(--rojo);line-height:1.6}
+
+/* ===== BOTONES ===== */
+.btn-rojo{width:100%;background:var(--rojo);border:none;border-radius:14px;padding:16px;color:#fff;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(204,34,34,0.25)}
+.btn-rojo:active{transform:scale(0.98)}
+.btn-verde{width:100%;background:var(--verde);border:none;border-radius:14px;padding:16px;color:#fff;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(26,138,74,0.25)}
+.btn-verde:active{transform:scale(0.98)}
+.btn-outline{width:100%;background:transparent;border:1.5px solid var(--border);border-radius:14px;padding:14px;color:var(--text3);font-size:14px;cursor:pointer;margin-top:10px}
+.btn-sm-verde{background:var(--verde-light);border:1.5px solid var(--verde);border-radius:10px;padding:8px 16px;color:var(--verde);font-size:12px;font-weight:700;cursor:pointer}
+
+/* ===== SELECTOR ALERTA ===== */
+#alertaSelector{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
+#alertaSelector.show{display:flex}
+.selector-sheet{background:var(--white);border-radius:28px 28px 0 0;padding:22px 20px 40px;width:100%;max-height:90vh;overflow-y:auto}
+.sheet-handle{width:40px;height:4px;background:var(--gris2);border-radius:99px;margin:0 auto 18px}
+.sheet-title{font-size:17px;font-weight:900;color:var(--text);text-align:center;margin-bottom:6px}
+.sheet-sub{font-size:12px;color:var(--text3);text-align:center;margin-bottom:18px}
+.modo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.modo-btn{background:var(--gris);border:2px solid var(--border);border-radius:16px;padding:16px 8px;text-align:center;cursor:pointer}
+.modo-btn:active{transform:scale(0.97)}
+.modo-btn.real{border-color:var(--rojo);background:var(--rojo-light)}
+.modo-btn.sim{border-color:var(--verde);background:var(--verde-light)}
+.modo-icon{font-size:26px;display:block;margin-bottom:6px}
+.modo-label{font-size:13px;font-weight:800;display:block}
+.modo-sub{font-size:10px;display:block;margin-top:2px;color:var(--text3)}
+.modo-btn.real .modo-label{color:var(--rojo)}
+.modo-btn.sim .modo-label{color:var(--verde)}
+.tipos-sel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.tipo-sel-btn{background:var(--gris);border:1.5px solid var(--border);border-radius:14px;padding:13px 6px;cursor:pointer;text-align:center}
+.tipo-sel-btn:active{transform:scale(0.95)}
+.tipo-sel-btn.sr{border-color:var(--rojo);background:var(--rojo-light)}
+.tipo-sel-btn.sg{border-color:var(--verde);background:var(--verde-light)}
+.tipo-sel-icon{font-size:26px;display:block;margin-bottom:5px}
+.tipo-sel-label{font-size:11px;color:var(--text2);font-weight:600}
+.aviso-box{border-radius:12px;padding:12px 14px;font-size:12px;line-height:1.6;margin-bottom:14px}
+.aviso-r{background:var(--rojo-light);border:1.5px solid var(--rojo-mid);color:var(--rojo)}
+.aviso-g{background:var(--verde-light);border:1.5px solid var(--verde-mid);color:var(--verde)}
+
+/* ===== ALERTA OVERLAY ===== */
+#alertaOverlay{display:none;position:fixed;inset:0;z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center}
+#alertaOverlay.show{display:flex}
+.ao-bg-rojo{background:linear-gradient(160deg,#8b0000,#cc2222)}
+.ao-bg-verde{background:linear-gradient(160deg,#0a4a22,#1a8a4a)}
+.ao-circle{width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:52px;border:3px solid rgba(255,255,255,0.3)}
+.ao-modo{font-size:11px;font-weight:800;letter-spacing:3px;color:rgba(255,255,255,0.7)}
+.ao-tipo{font-size:32px;font-weight:900;letter-spacing:2px;color:#fff}
+.ao-tag{padding:7px 22px;border-radius:99px;font-size:12px;font-weight:800;background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3)}
+.ao-info{background:rgba(0,0,0,0.3);border-radius:16px;padding:16px 20px;width:100%;max-width:360px;backdrop-filter:blur(4px)}
+.ao-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px}
+.ao-row:last-child{border:none}
+.ao-lbl{color:rgba(255,255,255,0.6)}
+.ao-val{color:#fff;font-weight:700;text-align:right}
+.ao-btns{width:100%;max-width:360px;display:flex;flex-direction:column;gap:10px}
+.ao-btn{width:100%;border:none;border-radius:14px;padding:16px;font-size:14px;font-weight:800;cursor:pointer;background:rgba(255,255,255,0.2);color:#fff;border:1.5px solid rgba(255,255,255,0.3);backdrop-filter:blur(4px)}
+.ao-btn:active{transform:scale(0.97);background:rgba(255,255,255,0.3)}
+
+/* ===== DIRECTORIO ===== */
+.dir-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--gris2);cursor:pointer}
+.dir-row:last-child{border:none}
+.dir-row:active{opacity:0.7}
+.dir-icon{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.dir-name{font-size:14px;font-weight:700;color:var(--text)}
+.dir-num{font-size:12px;color:var(--rojo);margin-top:2px;font-weight:600}
+.dir-call{margin-left:auto;width:40px;height:40px;border-radius:50%;background:var(--rojo-light);border:1.5px solid var(--rojo-mid);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.section-label{font-size:10px;font-weight:800;color:var(--text3);letter-spacing:2px;margin-bottom:10px;margin-top:6px}
+
+/* ===== NOTIFICACIÓN SIMULACRO ===== */
+.notif-simulacro{position:fixed;top:0;left:0;right:0;background:var(--white);border-bottom:3px solid var(--rojo);padding:16px 20px;z-index:800;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.15);animation:slideDown 0.3s ease}
+.notif-simulacro.show{display:flex;align-items:flex-start;gap:12px}
+@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+.notif-sim-icon{font-size:28px;flex-shrink:0}
+.notif-sim-title{font-size:14px;font-weight:800;color:var(--rojo)}
+.notif-sim-body{font-size:12px;color:var(--text2);margin-top:3px;line-height:1.5}
+.notif-sim-close{margin-left:auto;background:var(--gris);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px;flex-shrink:0}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--gris3);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">🔔</div>
+    <div class="login-title">ALERTA</div>
+    <div class="login-sub">UMAA IMSS AGUASCALIENTES</div>
+    <div class="canal-box">
+      <div class="canal-label">📡 CANAL DE GRUPO</div>
+      <div class="canal-num" id="canalDisplay">----</div>
+      <div class="canal-hint">Comparte este número con tu equipo</div>
+    </div>
+    <div class="input-row">
+      <input class="inp" id="canalInput" type="number" placeholder="Número de canal" inputmode="numeric" style="flex:1">
+      <button class="btn-nuevo" onclick="generarCanal()">NUEVO</button>
+    </div>
+    <input class="inp" id="loginNombre" type="text" placeholder="Tu nombre completo" style="width:100%;margin-bottom:10px;display:block">
+    <input class="inp" id="loginArea" type="text" placeholder="Área (ej: Urgencias)" style="width:100%;margin-bottom:10px;display:block">
+    <select class="sel" id="loginRol">
+      <option value="colaborador">Colaborador general</option>
+      <option value="brigadista">Brigadista</option>
+      <option value="jefe">Jefe de servicio</option>
+      <option value="admin">Administrador / Dirección</option>
+    </select>
+    <button class="btn-entrar" id="btnEntrar">▶ INGRESAR AL CANAL</button>
+  </div>
+</div>
+
+<!-- ===== NOTIFICACIÓN SIMULACRO ===== -->
+<div class="notif-simulacro" id="notifSimulacro">
+  <div class="notif-sim-icon">🛡️</div>
+  <div style="flex:1">
+    <div class="notif-sim-title" id="notifSimTitle">Simulacro mañana</div>
+    <div class="notif-sim-body" id="notifSimBody">-</div>
+  </div>
+  <button class="notif-sim-close" onclick="cerrarNotifSim()">✕</button>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-icon">🔔</div>
+      <div>
+        <div class="topbar-title">ALERTA</div>
+        <div class="topbar-sub">UMAA IMSS AGS</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="canal-pill"><div class="canal-dot"></div><span id="topCanal">-</span></div>
+      <div class="user-chip">
+        <div class="user-av" id="topAv">?</div>
+        <div class="user-nm" id="topNm">-</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INICIO -->
+  <div class="screen active" id="sc-inicio">
+    <div class="page-title">Panel de emergencias</div>
+    <div class="page-sub" id="home-sub">Canal activo · 1 conectado</div>
+
+    <div class="sos-section">
+      <div class="sos-label">PRESIONA PARA ALERTAR</div>
+      <button class="sos-btn" id="sosBtn">
+        <span class="sos-icon">🚨</span>
+        <span class="sos-text">ALERTAR</span>
+      </button>
+      <div class="sos-hint">Toca si detectas una emergencia o simulacro</div>
+      <div class="sos-sound">⚡ SUENA AUNQUE EL CELULAR ESTÉ EN SILENCIO</div>
+    </div>
+
+    <div class="tipos-label">TIPOS DE ALERTA RÁPIDA</div>
+    <div class="tipos-grid">
+      <div class="tipo-card" onclick="abrirSelector('Incendio')"><span class="tipo-card-icon">🔥</span><span class="tipo-card-label">Incendio</span></div>
+      <div class="tipo-card" onclick="abrirSelector('Sismo')"><span class="tipo-card-icon">📡</span><span class="tipo-card-label">Sismo</span></div>
+      <div class="tipo-card" onclick="abrirSelector('Derrame')"><span class="tipo-card-icon">💧</span><span class="tipo-card-label">Derrame</span></div>
+      <div class="tipo-card" onclick="abrirSelector('Código Rojo')"><span class="tipo-card-icon">🚑</span><span class="tipo-card-label">Cód. Rojo</span></div>
+      <div class="tipo-card" onclick="abrirSelector('F. Eléctrica')"><span class="tipo-card-icon">⚡</span><span class="tipo-card-label">F. Eléctrica</span></div>
+      <div class="tipo-card" onclick="abrirSelector('Amenaza')"><span class="tipo-card-icon">🛡️</span><span class="tipo-card-label">Amenaza</span></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <span style="font-size:18px">💬</span>
+        <div style="flex:1"><div style="font-size:14px;font-weight:800;color:var(--text)">Chat de emergencia</div><div style="font-size:11px;color:var(--text3)">Canal <span id="home-chat-canal">-</span></div></div>
+        <button class="btn-sm-verde" onclick="goTo('chat')">Abrir</button>
+      </div>
+      <div class="stats-grid" style="margin-bottom:0">
+        <div class="stat-card"><div class="stat-num" style="color:var(--verde)" id="stat-salvo">0</div><div class="stat-lbl">A SALVO</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--rojo)" id="stat-ayuda">0</div><div class="stat-lbl">PIDEN AYUDA</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIMULACROS -->
+  <div class="screen" id="sc-simulacros">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+      <div><div class="page-title" style="color:var(--rojo)">Simulacros</div><div class="page-sub">Agendados y realizados</div></div>
+      <button class="btn-sm-verde" onclick="goTo('agendar')">+ Agendar</button>
+    </div>
+
+    <div id="lista-simulacros">
+      <!-- Se llena dinámicamente -->
+    </div>
+
+    <div style="color:var(--text3);font-size:12px;text-align:center;padding:20px 0;" id="no-simulacros" style="display:none">
+      Aún no hay simulacros agendados.<br>Toca "+ Agendar" para crear uno.
+    </div>
+  </div>
+
+  <!-- AGENDAR SIMULACRO -->
+  <div class="screen" id="sc-agendar">
+    <div class="page-title" style="color:var(--rojo)">Agendar simulacro</div>
+    <div class="page-sub">El sistema notificará automáticamente al personal</div>
+
+    <div class="form-section">
+      <span class="form-label">TIPO DE SIMULACRO</span>
+      <div class="tipos-form-grid" id="tipoFormGrid">
+        <div class="tipo-form-btn sel" onclick="selTipoForm(this,'Incendio')"><span class="tipo-form-icon">🔥</span><span class="tipo-form-label">Incendio</span></div>
+        <div class="tipo-form-btn" onclick="selTipoForm(this,'Sismo')"><span class="tipo-form-icon">📡</span><span class="tipo-form-label">Sismo</span></div>
+        <div class="tipo-form-btn" onclick="selTipoForm(this,'Derrame')"><span class="tipo-form-icon">💧</span><span class="tipo-form-label">Derrame</span></div>
+        <div class="tipo-form-btn" onclick="selTipoForm(this,'Cód. Rojo')"><span class="tipo-form-icon">🚑</span><span class="tipo-form-label">Cód. Rojo</span></div>
+        <div class="tipo-form-btn" onclick="selTipoForm(this,'F. Eléctrica')"><span class="tipo-form-icon">⚡</span><span class="tipo-form-label">F. Eléctrica</span></div>
+        <div class="tipo-form-btn" onclick="selTipoForm(this,'Amenaza')"><span class="tipo-form-icon">🛡️</span><span class="tipo-form-label">Amenaza</span></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <span class="form-label">DESCRIPCIÓN DEL ESCENARIO</span>
+      <textarea class="form-ta" id="form-desc" placeholder="Ej: Conato de incendio en cocina del segundo piso..."></textarea>
+    </div>
+
+    <div class="form-section">
+      <span class="form-label">FECHA Y HORA DEL SIMULACRO</span>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input class="form-inp" type="date" id="form-fecha" style="flex:1.5;margin-bottom:0">
+        <input class="form-inp" type="time" id="form-hora" value="10:00" style="flex:1;margin-bottom:0">
+      </div>
+      <span class="form-label" style="margin-top:4px">DURACIÓN ESTIMADA</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <input class="form-inp" type="number" id="form-duracion" value="15" min="5" max="120" style="width:90px;text-align:center;margin-bottom:0">
+        <span style="font-size:13px;color:var(--text3)">minutos</span>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <span class="form-label">ZONA AFECTADA</span>
+      <input class="form-inp" type="text" id="form-zona" placeholder="Ej: Urgencias — Piso 2 / Todo el hospital">
+      <span class="form-label" style="margin-top:4px">PERSONAL INVOLUCRADO</span>
+      <div>
+        <span class="chip on" onclick="this.classList.toggle('on')">Todo el hospital</span>
+        <span class="chip" onclick="this.classList.toggle('on')">Urgencias</span>
+        <span class="chip" onclick="this.classList.toggle('on')">Laboratorio</span>
+        <span class="chip" onclick="this.classList.toggle('on')">Admisión</span>
+        <span class="chip" onclick="this.classList.toggle('on')">Brigadistas</span>
+        <span class="chip" onclick="this.classList.toggle('on')">Jefes de servicio</span>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <span class="form-label">NOTIFICACIONES AUTOMÁTICAS</span>
+      <div class="toggle-row"><div class="toggle-lbl">📅 7 días antes</div><span class="toggle-on">ON</span></div>
+      <div class="toggle-row"><div class="toggle-lbl">📅 3 días antes</div><span class="toggle-on">ON</span></div>
+      <div class="toggle-row"><div class="toggle-lbl">🔔 Un día antes (aviso a todos)</div><span class="toggle-on">ON</span></div>
+      <div class="toggle-row"><div class="toggle-lbl">⏰ Día del simulacro · 7 am</div><span class="toggle-on">ON</span></div>
+      <div class="toggle-row"><div class="toggle-lbl">🔔 30 minutos antes</div><span class="toggle-on">ON</span></div>
+      <div class="toggle-row"><div class="toggle-lbl">🔊 Al iniciar · sonido forzado</div><span class="toggle-always">SIEMPRE</span></div>
+    </div>
+
+    <div class="notif-info">
+      <span style="font-size:18px">🔊</span>
+      <span><strong style="color:var(--rojo)">Sonido forzado al inicio:</strong> la alerta suena en todos los celulares del canal aunque estén en silencio.</span>
+    </div>
+
+    <button class="btn-rojo" onclick="guardarSimulacro()">📅 GUARDAR Y PROGRAMAR SIMULACRO</button>
+    <button class="btn-outline" onclick="goTo('simulacros')">Cancelar</button>
+  </div>
+
+  <!-- CHAT -->
+  <div class="screen" id="sc-chat">
+    <div class="page-title" style="color:var(--verde)">Chat de emergencia</div>
+    <div class="page-sub">Canal <span id="chat-canal-label">-</span> · Comunicación en tiempo real</div>
+    <div class="chat-wrap">
+      <div class="chat-header">
+        <div class="canal-dot"></div>
+        <div class="chat-header-title">Canal <span id="chat-canal-num">-</span></div>
+        <span style="margin-left:auto;font-size:11px;color:var(--verde)" id="chat-conectados">1 conectado</span>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg-sys">Chat activo — escribe para comunicarte con todos del canal</div>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-inp" id="chatInput" type="text" placeholder="Escribe un mensaje..." onkeydown="if(event.key==='Enter')enviarMsg()">
+        <button class="chat-send" onclick="enviarMsg()">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIRECTORIO -->
+  <div class="screen" id="sc-directorio">
+    <div class="page-title">Directorio</div>
+    <div class="page-sub">Toca el número para llamar · Disponible sin internet</div>
+
+    <div class="card">
+      <div class="section-label">SERVICIOS DE EMERGENCIA</div>
+      <div class="dir-row" onclick="window.location='tel:4499100101'"><div class="dir-icon" style="background:#fff0f0">🚒</div><div style="flex:1"><div class="dir-name">Bomberos Aguascalientes</div><div class="dir-num">449 910-0101</div></div><div class="dir-call">📞</div></div>
+      <div class="dir-row" onclick="window.location='tel:065'"><div class="dir-icon" style="background:#f0f0ff">🚑</div><div style="flex:1"><div class="dir-name">Cruz Roja Mexicana</div><div class="dir-num">065 · 449 915-9000</div></div><div class="dir-call">📞</div></div>
+      <div class="dir-row" onclick="window.location='tel:911'"><div class="dir-icon" style="background:#f0fff0">🛡️</div><div style="flex:1"><div class="dir-name">Emergencias 911</div><div class="dir-num">911</div></div><div class="dir-call">📞</div></div>
+      <div class="dir-row" onclick="window.location='tel:071'"><div class="dir-icon" style="background:#fffff0">⚡</div><div style="flex:1"><div class="dir-name">CFE — Fallas eléctricas</div><div class="dir-num">071</div></div><div class="dir-call">📞</div></div>
+      <div class="dir-row" onclick="window.location='tel:4499105500'"><div class="dir-icon" style="background:#f0f8ff">💧</div><div style="flex:1"><div class="dir-name">CAASA — Agua / Gas</div><div class="dir-num">449 910-5500</div></div><div class="dir-call">📞</div></div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">INTERNOS UMAA AGS</div>
+      <div class="dir-row"><div class="dir-icon" style="background:#f0fff0">🏥</div><div style="flex:1"><div class="dir-name">Dirección UMAA</div><div class="dir-num">Ext. 1001</div></div><div class="dir-call">📞</div></div>
+      <div class="dir-row"><div class="dir-icon" style="background:#fffff0">🛡️</div><div style="flex:1"><div class="dir-name">Jefe de Brigada</div><div class="dir-num">Ext. 1010</div></div><div class="dir-call">📞</div></div>
+      <div class="dir-row"><div class="dir-icon" style="background:#f0f8ff">🔧</div><div style="flex:1"><div class="dir-name">Mantenimiento</div><div class="dir-num">Ext. 1020</div></div><div class="dir-call">📞</div></div>
+      <div class="dir-row"><div class="dir-icon" style="background:#f8f0ff">🔒</div><div style="flex:1"><div class="dir-name">Seguridad / Vigilancia</div><div class="dir-num">Ext. 1030</div></div><div class="dir-call">📞</div></div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottomNav" style="display:none">
+  <div class="bn-item active" onclick="goTo('inicio')" id="bn-inicio">
+    <span class="bn-icon">🏠</span><span>INICIO</span>
+  </div>
+  <div class="bn-item" onclick="goTo('simulacros')" id="bn-simulacros">
+    <span class="bn-icon">🛡️</span><span>SIMULACROS</span>
+  </div>
+  <div class="bn-item" onclick="goTo('chat')" id="bn-chat">
+    <span class="bn-icon">💬</span><span>CHAT</span>
+  </div>
+</div>
+
+<!-- SELECTOR ALERTA -->
+<div id="alertaSelector">
+  <div class="selector-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">¿Qué estás reportando?</div>
+    <div class="sheet-sub">La alerta sonará en todos los del canal</div>
+    <div class="modo-grid">
+      <div class="modo-btn real" id="modoReal" onclick="setModo('real')">
+        <span class="modo-icon">🚨</span>
+        <span class="modo-label">EMERGENCIA REAL</span>
+        <span class="modo-sub">Situación de peligro</span>
+      </div>
+      <div class="modo-btn" id="modoSim" onclick="setModo('sim')">
+        <span class="modo-icon">🛡️</span>
+        <span class="modo-label">SIMULACRO</span>
+        <span class="modo-sub">Práctica programada</span>
+      </div>
+    </div>
+    <div class="tipos-sel-grid" id="tipoSelGrid">
+      <div class="tipo-sel-btn sr" onclick="selTipoSel(this,'Incendio')"><span class="tipo-sel-icon">🔥</span><span class="tipo-sel-label">Incendio</span></div>
+      <div class="tipo-sel-btn" onclick="selTipoSel(this,'Sismo')"><span class="tipo-sel-icon">📡</span><span class="tipo-sel-label">Sismo</span></div>
+      <div class="tipo-sel-btn" onclick="selTipoSel(this,'Derrame')"><span class="tipo-sel-icon">💧</span><span class="tipo-sel-label">Derrame</span></div>
+      <div class="tipo-sel-btn" onclick="selTipoSel(this,'Cód. Rojo')"><span class="tipo-sel-icon">🚑</span><span class="tipo-sel-label">Cód. Rojo</span></div>
+      <div class="tipo-sel-btn" onclick="selTipoSel(this,'F. Eléctrica')"><span class="tipo-sel-icon">⚡</span><span class="tipo-sel-label">F. Eléctrica</span></div>
+      <div class="tipo-sel-btn" onclick="selTipoSel(this,'Amenaza')"><span class="tipo-sel-icon">🛡️</span><span class="tipo-sel-label">Amenaza</span></div>
+    </div>
+    <div class="aviso-box aviso-r" id="avisoBox">⚡ <strong>Sonido forzado:</strong> alerta en todos los del canal aunque estén en silencio. Solo para emergencia REAL.</div>
+    <button class="btn-rojo" id="btnConfirmar" onclick="confirmarAlerta()">🚨 ALERTAR AHORA</button>
+    <button class="btn-outline" onclick="cerrarSelector()">Cancelar</button>
+  </div>
+</div>
+
+<!-- OVERLAY ALERTA ACTIVA -->
+<div id="alertaOverlay">
+  <div class="ao-circle" id="aoCircle">🔥</div>
+  <div class="ao-modo" id="aoModo">EMERGENCIA REAL</div>
+  <div class="ao-tipo" id="aoTipo">INCENDIO</div>
+  <div class="ao-tag" id="aoTag">⚠ EMERGENCIA REAL</div>
+  <div class="ao-info">
+    <div class="ao-row"><span class="ao-lbl">Zona</span><span class="ao-val" id="aoZona">-</span></div>
+    <div class="ao-row"><span class="ao-lbl">Reportado por</span><span class="ao-val" id="aoReportador">-</span></div>
+    <div class="ao-row"><span class="ao-lbl">Hora</span><span class="ao-val" id="aoHora">-</span></div>
+    <div class="ao-row"><span class="ao-lbl">Canal</span><span class="ao-val" id="aoCanal">-</span></div>
+  </div>
+  <div class="ao-btns">
+    <button class="ao-btn" onclick="responder('evacuando')">🏃 YA ESTOY EVACUANDO</button>
+    <button class="ao-btn" onclick="responder('salvo')">✅ ESTOY A SALVO</button>
+    <button class="ao-btn" onclick="responder('ayuda')">⚠️ NECESITO AYUDA</button>
+  </div>
+</div>
+
+<script>
+// ===== ESTADO =====
+var miNombre='', miArea='', miRol='', miCanal='';
+var modoActual='real', tipoSelActual='Incendio', tipoFormActual='Incendio';
+var bc=null;
+var stats={salvo:0,ayuda:0};
+var simulacros=[];
+var screenActual='inicio';
+
+// ===== INIT =====
+window.addEventListener('load', function(){
+  generarCanal();
+  var hoy = new Date();
+  hoy.setDate(hoy.getDate()+7);
+  document.getElementById('form-fecha').value = hoy.toISOString().split('T')[0];
+  document.getElementById('btnEntrar').addEventListener('click', doLogin);
+  document.getElementById('btnEntrar').addEventListener('touchend', function(e){ e.preventDefault(); doLogin(); });
+  document.getElementById('sosBtn').addEventListener('click', function(){ abrirSelector('Incendio'); });
+  document.getElementById('sosBtn').addEventListener('touchend', function(e){ e.preventDefault(); abrirSelector('Incendio'); });
+});
+
+function generarCanal(){
+  var n = Math.floor(1000 + Math.random()*9000);
+  document.getElementById('canalInput').value = n;
+  document.getElementById('canalDisplay').textContent = n;
+}
+
+// ===== LOGIN =====
+function doLogin(){
+  var canal = (document.getElementById('canalInput').value||'').toString().trim();
+  var nombre = (document.getElementById('loginNombre').value||'').toString().trim();
+  var area = (document.getElementById('loginArea').value||'').toString().trim();
+  var rol = document.getElementById('loginRol').value||'colaborador';
+  if(!canal||canal==='----') canal=Math.floor(1000+Math.random()*9000).toString();
+  if(!nombre) nombre='Usuario';
+  if(!area) area='General';
+  miCanal=canal; miNombre=nombre; miArea=area; miRol=rol;
+  var ini=nombre.split(' ').filter(Boolean).map(function(p){return p[0];}).join('').toUpperCase().substr(0,2)||'U';
+  document.getElementById('topAv').textContent=ini;
+  document.getElementById('topNm').textContent=nombre;
+  document.getElementById('topCanal').textContent='Canal '+canal;
+  document.getElementById('home-chat-canal').textContent=canal;
+  document.getElementById('chat-canal-label').textContent=canal;
+  document.getElementById('chat-canal-num').textContent=canal;
+  var lp=document.getElementById('loginPage');
+  lp.style.cssText='display:none!important;visibility:hidden;opacity:0;position:fixed;z-index:-999;';
+  document.getElementById('app').style.display='block';
+  document.getElementById('bottomNav').style.display='grid';
+  // BroadcastChannel
+  try{
+    bc=new BroadcastChannel('alerta-'+canal);
+    bc.onmessage=function(e){ handleMsg(e.data); };
+    bcEnviar({tipo:'presencia',nombre:nombre,area:area,rol:rol});
+    setInterval(function(){ bcEnviar({tipo:'presencia',nombre:nombre,area:area,rol:rol}); },10000);
+  }catch(e){}
+  renderSimulacros();
+  verificarNotifSimulacros();
+}
+
+// ===== NAVEGACIÓN =====
+function goTo(screen){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('sc-'+screen).classList.add('active');
+  document.querySelectorAll('.bn-item').forEach(function(b){b.classList.remove('active');});
+  var bn=document.getElementById('bn-'+screen);
+  if(bn) bn.classList.add('active');
+  screenActual=screen;
+  window.scrollTo(0,0);
+}
+
+// ===== BROADCAST =====
+function bcEnviar(data){ if(bc){ try{ bc.postMessage(data); }catch(e){} } }
+function handleMsg(msg){
+  if(msg.tipo==='alerta') mostrarAlerta(msg);
+  else if(msg.tipo==='chat') agregarMsgChat(msg.nombre,msg.area,msg.texto,msg.hora,false);
+  else if(msg.tipo==='respuesta') manejarRespuesta(msg);
+  else if(msg.tipo==='simulacro_notif') mostrarNotifSimulacro(msg);
+}
+
+// ===== SELECTOR ALERTA =====
+function abrirSelector(tipo){
+  tipoSelActual=tipo||'Incendio';
+  document.getElementById('alertaSelector').classList.add('show');
+}
+function cerrarSelector(){ document.getElementById('alertaSelector').classList.remove('show'); }
+
+function setModo(modo){
+  modoActual=modo;
+  var mr=document.getElementById('modoReal'), ms=document.getElementById('modoSim');
+  var av=document.getElementById('avisoBox'), cb=document.getElementById('btnConfirmar');
+  document.querySelectorAll('.tipo-sel-btn').forEach(function(b){b.className='tipo-sel-btn';});
+  if(modo==='real'){
+    mr.className='modo-btn real'; ms.className='modo-btn';
+    av.className='aviso-box aviso-r';
+    av.innerHTML='⚡ <strong>Sonido forzado:</strong> alerta en todos los del canal aunque estén en silencio. Solo para emergencia REAL.';
+    cb.className='btn-rojo'; cb.innerHTML='🚨 ALERTAR AHORA';
+    document.querySelectorAll('.tipo-sel-btn')[0].classList.add('sr');
+  } else {
+    ms.className='modo-btn sim'; mr.className='modo-btn';
+    av.className='aviso-box aviso-g';
+    av.innerHTML='✓ Se notificará como <strong>SIMULACRO</strong>. También suena aunque el celular esté en silencio.';
+    cb.className='btn-verde'; cb.innerHTML='🛡️ INICIAR SIMULACRO';
+    document.querySelectorAll('.tipo-sel-btn')[0].classList.add('sg');
+  }
+}
+
+function selTipoSel(el, tipo){
+  tipoSelActual=tipo;
+  document.querySelectorAll('.tipo-sel-btn').forEach(function(b){b.className='tipo-sel-btn';});
+  el.classList.add(modoActual==='real'?'sr':'sg');
+}
+
+function confirmarAlerta(){
+  cerrarSelector();
+  var hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  var data={tipo:'alerta',subtipo:tipoSelActual,modo:modoActual,zona:miArea,reportadoPor:miNombre,area:miArea,hora:hora,canal:miCanal};
+  bcEnviar(data);
+  mostrarAlerta(data);
+}
+
+// ===== MOSTRAR ALERTA =====
+function mostrarAlerta(msg){
+  sonar();
+  var esReal=msg.modo==='real';
+  var ov=document.getElementById('alertaOverlay');
+  ov.className=esReal?'ao-bg-rojo':'ao-bg-verde';
+  ov.classList.add('show');
+  var iconos={'Incendio':'🔥','Sismo':'📡','Derrame':'💧','Código Rojo':'🚑','Cód. Rojo':'🚑','F. Eléctrica':'⚡','Amenaza':'🛡️'};
+  document.getElementById('aoCircle').textContent=iconos[msg.subtipo]||'🚨';
+  document.getElementById('aoModo').textContent=esReal?'EMERGENCIA REAL':'SIMULACRO';
+  document.getElementById('aoTipo').textContent=(msg.subtipo||'ALERTA').toUpperCase();
+  document.getElementById('aoTag').textContent=esReal?'⚠ EMERGENCIA REAL — NO ES SIMULACRO':'✓ ESTO ES UN SIMULACRO';
+  document.getElementById('aoZona').textContent=msg.zona||'-';
+  document.getElementById('aoReportador').textContent=msg.reportadoPor+' · '+msg.area;
+  document.getElementById('aoHora').textContent=msg.hora;
+  document.getElementById('aoCanal').textContent='Canal '+msg.canal;
+  agregarMsgSistema((esReal?'🚨 EMERGENCIA REAL':'🟢 SIMULACRO')+': '+msg.subtipo+' en '+msg.zona+' · '+msg.reportadoPor+' · '+msg.hora, esReal);
+}
+
+function responder(estado){
+  document.getElementById('alertaOverlay').classList.remove('show');
+  document.getElementById('alertaOverlay').className='';
+  var hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  bcEnviar({tipo:'respuesta',estado:estado,nombre:miNombre,area:miArea,hora:hora});
+  manejarRespuesta({estado:estado,nombre:'Tú',area:miArea,hora:hora});
+}
+
+function manejarRespuesta(msg){
+  if(msg.estado==='salvo') stats.salvo++;
+  else if(msg.estado==='ayuda') stats.ayuda++;
+  document.getElementById('stat-salvo').textContent=stats.salvo;
+  document.getElementById('stat-ayuda').textContent=stats.ayuda;
+  var em=msg.estado==='salvo'?'✅ A SALVO':msg.estado==='evacuando'?'🏃 EVACUANDO':'⚠️ NECESITA AYUDA';
+  agregarMsgSistema(msg.nombre+' ('+msg.area+'): '+em+' · '+msg.hora, false);
+}
+
+// ===== CHAT =====
+function enviarMsg(){
+  var inp=document.getElementById('chatInput');
+  var txt=(inp.value||'').trim();
+  if(!txt) return;
+  var hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  bcEnviar({tipo:'chat',nombre:miNombre,area:miArea,rol:miRol,texto:txt,hora:hora});
+  agregarMsgChat('Tú',miArea,txt,hora,true);
+  inp.value='';
+}
+
+function agregarMsgChat(nombre,area,texto,hora,mio){
+  var msgs=document.getElementById('chatMessages');
+  var d=document.createElement('div');
+  if(mio){
+    d.className='msg-out';
+    d.innerHTML='<div class="msg-text">'+texto+'</div><div class="msg-meta">'+hora+' ✓✓</div>';
+  } else {
+    d.className='msg-in';
+    d.innerHTML='<div class="msg-name">'+nombre+' · '+area+'</div><div class="msg-text">'+texto+'</div><div class="msg-meta">'+hora+'</div>';
+  }
+  msgs.appendChild(d);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function agregarMsgSistema(txt, esRojo){
+  var msgs=document.getElementById('chatMessages');
+  var d=document.createElement('div');
+  d.className='msg-sys'+(esRojo?'':' verde');
+  d.textContent=txt;
+  msgs.appendChild(d);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+// ===== SIMULACROS =====
+function selTipoForm(el, tipo){
+  tipoFormActual=tipo;
+  document.querySelectorAll('#tipoFormGrid .tipo-form-btn').forEach(function(b){b.classList.remove('sel');});
+  el.classList.add('sel');
+}
+
+function guardarSimulacro(){
+  var fecha=document.getElementById('form-fecha').value;
+  var hora=document.getElementById('form-hora').value;
+  var desc=document.getElementById('form-desc').value;
+  var zona=document.getElementById('form-zona').value||'General';
+  var duracion=document.getElementById('form-duracion').value||'15';
+  if(!fecha){ alert('Por favor selecciona una fecha.'); return; }
+  var sim={
+    id: Date.now(),
+    tipo: tipoFormActual,
+    desc: desc,
+    fecha: fecha,
+    hora: hora,
+    zona: zona,
+    duracion: duracion,
+    creadoPor: miNombre,
+    canal: miCanal,
+    estado: 'pendiente'
+  };
+  simulacros.unshift(sim);
+  guardarSimulacrosLocal();
+  // Notificar por canal a todos
+  bcEnviar({
+    tipo:'simulacro_notif',
+    subtipo:'nuevo',
+    tipoSim: tipoFormActual,
+    fecha: fecha,
+    hora: hora,
+    zona: zona,
+    creadoPor: miNombre
+  });
+  goTo('simulacros');
+  renderSimulacros();
+}
+
+function guardarSimulacrosLocal(){
+  try{ localStorage.setItem('alerta-sims-'+miCanal, JSON.stringify(simulacros)); }catch(e){}
+}
+
+function cargarSimulacrosLocal(){
+  try{
+    var d=localStorage.getItem('alerta-sims-'+miCanal);
+    if(d) simulacros=JSON.parse(d);
+  }catch(e){}
+}
+
+function renderSimulacros(){
+  cargarSimulacrosLocal();
+  var lista=document.getElementById('lista-simulacros');
+  var hoy=new Date().toISOString().split('T')[0];
+  var manana=new Date(); manana.setDate(manana.getDate()+1);
+  var mananaStr=manana.toISOString().split('T')[0];
+  lista.innerHTML='';
+  if(simulacros.length===0){
+    lista.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:30px 0;background:var(--white);border-radius:18px;border:1px solid var(--border);">📅 Aún no hay simulacros agendados.<br>Toca "+ Agendar" para crear uno.</div>';
+    return;
+  }
+  var iconos={'Incendio':'🔥','Sismo':'📡','Derrame':'💧','Cód. Rojo':'🚑','F. Eléctrica':'⚡','Amenaza':'🛡️'};
+  var colores={'Incendio':'#fff0f0','Sismo':'#fffff0','Derrame':'#f0f8ff','Cód. Rojo':'#fff0f4','F. Eléctrica':'#fffcf0','Amenaza':'#f8f0ff'};
+  simulacros.forEach(function(sim){
+    var esHoy=sim.fecha===hoy;
+    var esManana=sim.fecha===mananaStr;
+    var esPasado=sim.fecha<hoy;
+    var fechaObj=new Date(sim.fecha+'T12:00:00');
+    var fechaFmt=fechaObj.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    var diasRestantes=Math.round((fechaObj-new Date())/(1000*60*60*24));
+    var badge='', cardClass='sim-card';
+    if(esPasado){ badge='<span class="sim-badge badge-done">REALIZADO</span>'; cardClass='sim-card'; }
+    else if(esHoy){ badge='<span class="sim-badge badge-hoy">HOY</span>'; cardClass='sim-card hoy'; }
+    else if(esManana){ badge='<span class="sim-badge badge-prox">MAÑANA</span>'; cardClass='sim-card proximo'; }
+    else{ badge='<span class="sim-badge badge-prox">'+diasRestantes+' días</span>'; cardClass='sim-card proximo'; }
+    var notifRow='';
+    if(!esPasado && esManana){
+      notifRow='<div class="notif-row"><span>🔔 Notificación de mañana enviada a todos del canal</span></div>';
+    } else if(!esPasado && !esHoy){
+      notifRow='<div class="notif-row"><span>📅 Notificación automática programada un día antes</span></div>';
+    }
+    lista.innerHTML+=
+      '<div class="'+cardClass+'">'+
+        '<div class="sim-top">'+
+          '<div class="sim-icon-wrap" style="background:'+( colores[sim.tipo]||'#f5f5f5')+'">'+( iconos[sim.tipo]||'🛡️')+'</div>'+
+          '<div style="flex:1">'+
+            '<div class="sim-title">Simulacro de '+sim.tipo+'</div>'+
+            '<div class="sim-fecha">'+fechaFmt+' · '+sim.hora+' hrs</div>'+
+            (sim.desc?'<div style="font-size:11px;color:var(--text3);margin-top:3px">'+sim.desc+'</div>':'')+'</div>'+
+          badge+
+        '</div>'+
+        '<div class="sim-meta">'+
+          '<span>📍 '+sim.zona+'</span>'+
+          '<span>⏱ '+sim.duracion+' min</span>'+
+          '<span>👤 '+sim.creadoPor+'</span>'+
+        '</div>'+
+        notifRow+
+      '</div>';
+  });
+}
+
+// ===== NOTIFICACIÓN UN DÍA ANTES =====
+function verificarNotifSimulacros(){
+  cargarSimulacrosLocal();
+  var manana=new Date(); manana.setDate(manana.getDate()+1);
+  var mananaStr=manana.toISOString().split('T')[0];
+  simulacros.forEach(function(sim){
+    if(sim.fecha===mananaStr){
+      setTimeout(function(){
+        var msg={
+          tipo:'simulacro_notif',
+          subtipo:'manana',
+          tipoSim:sim.tipo,
+          fecha:sim.fecha,
+          hora:sim.hora,
+          zona:sim.zona,
+          creadoPor:sim.creadoPor
+        };
+        bcEnviar(msg);
+        mostrarNotifSimulacro(msg);
+      }, 2000);
+    }
+  });
+  setInterval(function(){
+    verificarNotifSimulacros();
+  }, 60*60*1000);
+}
+
+function mostrarNotifSimulacro(msg){
+  var notif=document.getElementById('notifSimulacro');
+  var iconos={'Incendio':'🔥','Sismo':'📡','Derrame':'💧','Cód. Rojo':'🚑','F. Eléctrica':'⚡','Amenaza':'🛡️'};
+  document.getElementById('notifSimTitle').textContent=(iconos[msg.tipoSim]||'🛡️')+' Simulacro mañana — '+msg.tipoSim;
+  document.getElementById('notifSimBody').textContent=
+    'El '+msg.fecha+' a las '+msg.hora+' hrs · '+msg.zona+' · Organizado por '+msg.creadoPor;
+  notif.classList.add('show');
+  setTimeout(function(){ notif.classList.remove('show'); }, 8000);
+}
+
+function cerrarNotifSim(){ document.getElementById('notifSimulacro').classList.remove('show'); }
+
+function mostrarNotifSimulacro(msg){
+  sonar();
+  var notif=document.getElementById('notifSimulacro');
+  var iconos={'Incendio':'🔥','Sismo':'📡','Derrame':'💧','Cód. Rojo':'🚑','F. Eléctrica':'⚡','Amenaza':'🛡️'};
+  document.getElementById('notifSimTitle').textContent=(iconos[msg.tipoSim]||'🛡️')+' Simulacro '+(msg.subtipo==='manana'?'mañana':'programado')+' — '+msg.tipoSim;
+  document.getElementById('notifSimBody').textContent=
+    (msg.subtipo==='manana'?'¡Mañana! ':'Agendado: ')+msg.fecha+' a las '+msg.hora+' hrs · '+msg.zona;
+  notif.classList.add('show');
+  setTimeout(function(){ notif.classList.remove('show'); }, 10000);
+}
+
+// ===== SONIDO =====
+function sonar(){
+  try{
+    var ctx=new(window.AudioContext||window.webkitAudioContext)();
+    for(var i=0;i<3;i++){
+      (function(i){
+        var o=ctx.createOscillator(), g=ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type='sawtooth'; o.frequency.value=880;
+        g.gain.setValueAtTime(0.4,ctx.currentTime+i*0.4);
+        g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+i*0.4+0.3);
+        o.start(ctx.currentTime+i*0.4);
+        o.stop(ctx.currentTime+i*0.4+0.3);
+      })(i);
+    }
+  }catch(e){}
+}
+</script>
+</body>
+</html>
