@@ -15,11 +15,30 @@
   --v:#1a8a4a;--vl:#f0fff6;--vm:#c8f0da;
   --g:#f4f5f7;--g2:#e8eaed;--g3:#c4c8d0;
   --t:#1a1a2e;--t2:#4a4a6a;--t3:#8888aa;
-  --bd:#e0e4ec;--w:#ffffff;
-  --sh:0 2px 12px rgba(0,0,0,0.08);--shl:0 8px 32px rgba(0,0,0,0.12);
+  --bd:#e0e4ec;--w:#fff;
+  --sh:0 2px 12px rgba(0,0,0,0.08);
+  --shl:0 8px 32px rgba(0,0,0,0.12);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--g);color:var(--t);min-height:100vh}
+
+/* PERMISOS MODAL */
+#permisosModal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:none;align-items:center;justify-content:center;padding:20px}
+#permisosModal.show{display:flex}
+.pm-box{background:#fff;border-radius:24px;padding:28px;width:100%;max-width:360px;text-align:center}
+.pm-icon{font-size:52px;margin-bottom:12px}
+.pm-title{font-size:18px;font-weight:900;color:var(--t);margin-bottom:8px}
+.pm-sub{font-size:13px;color:var(--t3);margin-bottom:20px;line-height:1.6}
+.pm-item{display:flex;align-items:center;gap:12px;background:var(--g);border-radius:12px;padding:12px;margin-bottom:10px;text-align:left}
+.pm-item-icon{font-size:22px;flex-shrink:0}
+.pm-item-title{font-size:13px;font-weight:700;color:var(--t)}
+.pm-item-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.pm-status{margin-left:auto;font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;flex-shrink:0}
+.pm-ok{background:var(--vl);color:var(--v)}
+.pm-pend{background:#fffcf0;color:#aa6600}
+.pm-no{background:var(--rl);color:var(--r)}
+.btn-pm{width:100%;background:var(--r);border:none;border-radius:14px;padding:16px;color:#fff;font-size:16px;font-weight:800;cursor:pointer;margin-top:6px}
+.btn-pm-skip{width:100%;background:transparent;border:1.5px solid var(--bd);border-radius:14px;padding:12px;color:var(--t3);font-size:13px;cursor:pointer;margin-top:8px}
 
 /* LOGIN */
 #lp{position:fixed;inset:0;background:linear-gradient(135deg,#fff,#f8f0f0);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
@@ -40,14 +59,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .cst{font-size:11px;margin-top:10px;padding:6px 12px;border-radius:8px;display:inline-block}
 .cst-ok{background:var(--vl);color:var(--v)}
 .cst-w{background:#fffcf0;color:#aa6600}
-.cst-e{background:var(--rl);color:var(--r)}
-
-/* INSTALL BANNER */
-#installBanner{display:none;background:var(--v);padding:12px 16px;align-items:center;gap:10px;position:sticky;top:0;z-index:200}
-#installBanner.show{display:flex}
-#installBanner span{color:#fff;font-size:12px;font-weight:600;flex:1;line-height:1.4}
-.ibtn{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);border-radius:8px;padding:6px 12px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
-.ibtn-x{background:transparent;border:none;color:rgba(255,255,255,0.7);font-size:18px;cursor:pointer;flex-shrink:0}
 
 /* TOPBAR */
 .tb{background:#fff;border-bottom:1px solid var(--bd);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
@@ -175,7 +186,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .shsub{font-size:12px;color:var(--t3);text-align:center;margin-bottom:18px}
 .modogrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .modob{background:var(--g);border:2px solid var(--bd);border-radius:16px;padding:16px 8px;text-align:center;cursor:pointer}
-.modob:active{transform:scale(0.97)}
 .modob.real{border-color:var(--r);background:var(--rl)}
 .modob.sim{border-color:var(--v);background:var(--vl)}
 .modoic{font-size:26px;display:block;margin-bottom:6px}
@@ -185,7 +195,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .modob.sim .modolb{color:var(--v)}
 .tsgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .tsb{background:var(--g);border:1.5px solid var(--bd);border-radius:14px;padding:13px 6px;cursor:pointer;text-align:center}
-.tsb:active{transform:scale(0.95)}
 .tsb.sr{border-color:var(--r);background:var(--rl)}
 .tsb.sg{border-color:var(--v);background:var(--vl)}
 .tsbic{font-size:26px;display:block;margin-bottom:5px}
@@ -194,7 +203,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .avr{background:var(--rl);border:1.5px solid var(--rm);color:var(--r)}
 .avg{background:var(--vl);border:1.5px solid var(--vm);color:var(--v)}
 
-/* OVERLAY */
+/* OVERLAY ALERTA — IMPOSIBLE IGNORAR */
 #aov{display:none;position:fixed;inset:0;z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;overflow-y:auto}
 #aov.show{display:flex}
 .ovr{background:linear-gradient(160deg,#7a0000,#cc2222);animation:fr 0.7s infinite}
@@ -214,7 +223,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .ovbtns{width:100%;max-width:360px;display:flex;flex-direction:column;gap:10px}
 .ovbtn{width:100%;border:none;border-radius:14px;padding:17px;font-size:15px;font-weight:800;cursor:pointer;background:rgba(255,255,255,0.25);color:#fff;border:1.5px solid rgba(255,255,255,0.4)}
 .ovbtn:active{transform:scale(0.97)}
-.ovskip{background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:10px;color:rgba(255,255,255,0.5);font-size:11px;cursor:pointer;width:100%}
+
+/* CONTADOR de 30 segundos */
+.countdown-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:4px}
+.countdown-ring{position:relative;width:70px;height:70px}
+.countdown-svg{transform:rotate(-90deg)}
+.countdown-track{fill:none;stroke:rgba(255,255,255,0.2);stroke-width:6}
+.countdown-bar{fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.countdown-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff}
+.countdown-lbl{font-size:10px;color:rgba(255,255,255,0.7);font-weight:700;letter-spacing:1px}
 
 /* BANNER */
 .banner{position:fixed;top:0;left:0;right:0;background:#fff;border-bottom:3px solid var(--r);padding:14px 16px;z-index:800;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
@@ -235,6 +252,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 </style>
 </head>
 <body>
+
+<!-- MODAL DE PERMISOS — primera vez -->
+<div id="permisosModal">
+  <div class="pm-box">
+    <div class="pm-icon">🔐</div>
+    <div class="pm-title">Permisos necesarios</div>
+    <div class="pm-sub">Para que ALERTA funcione correctamente y puedas recibir alertas aunque el celular esté en reposo, necesitamos estos permisos:</div>
+    <div class="pm-item">
+      <div class="pm-item-icon">🔔</div>
+      <div style="flex:1">
+        <div class="pm-item-title">Notificaciones</div>
+        <div class="pm-item-sub">Recibir alertas aunque la app esté cerrada</div>
+      </div>
+      <div class="pm-status pm-pend" id="st-notif">Pendiente</div>
+    </div>
+    <div class="pm-item">
+      <div class="pm-item-icon">⚡</div>
+      <div style="flex:1">
+        <div class="pm-item-title">Optimización de batería</div>
+        <div class="pm-item-sub">Permite que las alertas lleguen sin demora</div>
+      </div>
+      <div class="pm-status pm-pend" id="st-bateria">Pendiente</div>
+    </div>
+    <div class="pm-item">
+      <div class="pm-item-icon">📱</div>
+      <div style="flex:1">
+        <div class="pm-item-title">Pantalla completa</div>
+        <div class="pm-item-sub">Activa la pantalla al recibir una alerta</div>
+      </div>
+      <div class="pm-status pm-pend" id="st-pantalla">Pendiente</div>
+    </div>
+    <button class="btn-pm" id="btnPermisos">✅ ACTIVAR TODOS LOS PERMISOS</button>
+    <button class="btn-pm-skip" onclick="cerrarPermisos()">Continuar sin permisos completos</button>
+  </div>
+</div>
 
 <!-- LOGIN -->
 <div id="lp">
@@ -264,14 +316,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
   </div>
 </div>
 
-<!-- INSTALL BANNER -->
-<div id="installBanner">
-  <span>📲 Instala ALERTA en tu celular para recibir alertas aunque la app esté cerrada</span>
-  <button class="ibtn" id="installBtn">Instalar</button>
-  <button class="ibtn-x" onclick="document.getElementById('installBanner').classList.remove('show')">✕</button>
-</div>
-
-<!-- BANNER NOTIF -->
+<!-- BANNER -->
 <div class="banner" id="banner">
   <div style="font-size:26px;flex-shrink:0" id="bannerIcon">🔔</div>
   <div style="flex:1">
@@ -346,7 +391,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
   <!-- AGENDAR -->
   <div class="sc" id="sc-agendar">
     <div class="ptitle" style="color:var(--r)">Agendar simulacro</div>
-    <div class="psub">Visible para todos · Notificación automática a la hora exacta</div>
+    <div class="psub">Visible para todos · Alerta automática a la hora exacta</div>
     <div class="fsec">
       <span class="flbl">TIPO DE SIMULACRO</span>
       <div class="tfgrid" id="tfGrid">
@@ -398,7 +443,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
     </div>
     <div style="background:var(--rl);border:1.5px solid var(--rm);border-radius:12px;padding:12px 14px;display:flex;gap:10px;margin-bottom:14px">
       <span style="font-size:18px">🔊</span>
-      <span style="font-size:12px;color:var(--r);line-height:1.6"><strong>A la hora exacta</strong> Firebase dispara la alerta automáticamente a todos los celulares del canal — sin que nadie toque nada.</span>
+      <span style="font-size:12px;color:var(--r);line-height:1.6"><strong>A la hora exacta</strong> la alerta sona automáticamente en todos los celulares del canal — sonido por 30 segundos hasta que el usuario responda.</span>
     </div>
     <button class="br" onclick="guardarSim()">📅 GUARDAR Y PROGRAMAR</button>
     <button class="bo" onclick="goTo('simulacros')">Cancelar</button>
@@ -454,7 +499,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
   <div class="bni" onclick="goTo('directorio')" id="bn-directorio"><span class="bni-ic">📞</span><span>DIRECTORIO</span></div>
 </div>
 
-<!-- SELECTOR ALERTA -->
+<!-- SELECTOR -->
 <div id="asel">
   <div class="asheet">
     <div class="shdl"></div>
@@ -472,14 +517,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
       <div class="tsb" onclick="selTS(this,'F. Eléctrica')"><span class="tsbic">⚡</span><span class="tsblb">F. Eléctrica</span></div>
       <div class="tsb" onclick="selTS(this,'Amenaza')"><span class="tsbic">🛡️</span><span class="tsblb">Amenaza</span></div>
     </div>
-    <div class="aviso avr" id="avisoBox">⚡ <strong>Sonido máximo + vibración:</strong> alerta en TODOS aunque estén en silencio.</div>
+    <div class="aviso avr" id="avisoBox">⚡ <strong>Sonido 30 seg + vibración:</strong> alerta en TODOS aunque estén en silencio.</div>
     <button class="br" id="btnConf" onclick="confirmarAlerta()">🚨 ALERTAR AHORA</button>
     <button class="bo" onclick="cerrarSel()">Cancelar</button>
   </div>
 </div>
 
-<!-- OVERLAY ALERTA -->
+<!-- OVERLAY ALERTA — NO SE PUEDE CERRAR SIN RESPONDER -->
 <div id="aov">
+  <div class="countdown-wrap">
+    <div class="countdown-ring">
+      <svg class="countdown-svg" width="70" height="70" viewBox="0 0 70 70">
+        <circle class="countdown-track" cx="35" cy="35" r="30"/>
+        <circle class="countdown-bar" id="cdBar" cx="35" cy="35" r="30"
+          stroke-dasharray="188.5" stroke-dashoffset="0"/>
+      </svg>
+      <div class="countdown-num" id="cdNum">30</div>
+    </div>
+    <div class="countdown-lbl">SEGUNDOS</div>
+  </div>
   <div class="ovcirc" id="ovCirc">🔥</div>
   <div class="ovmodo" id="ovModo">EMERGENCIA REAL</div>
   <div class="ovtipo" id="ovTipo">INCENDIO</div>
@@ -495,10 +551,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
     <button class="ovbtn" onclick="responder('salvo')">✅ ESTOY A SALVO</button>
     <button class="ovbtn" onclick="responder('ayuda')">⚠️ NECESITO AYUDA</button>
   </div>
-  <button class="ovskip" onclick="ignorar()">Ver más tarde</button>
 </div>
 
-<!-- FIREBASE + APP LOGIC -->
 <script type="module">
 import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getMessaging, getToken, onMessage }
@@ -506,43 +560,41 @@ import { getMessaging, getToken, onMessage }
 import { getDatabase, ref, push, onChildAdded, set, onValue, onDisconnect }
                              from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
-const FB_CONFIG = {
-  apiKey:            "AIzaSyAgA_6uXxFvHsdcmgRW7faI2dkVm7weqZc",
-  authDomain:        "alerta-umaa.firebaseapp.com",
-  projectId:         "alerta-umaa",
-  storageBucket:     "alerta-umaa.firebasestorage.app",
-  messagingSenderId: "1026222287592",
-  appId:             "1:1026222287592:web:80edd883f06e4689daf75d",
-  databaseURL:       "https://alerta-umaa-default-rtdb.firebaseio.com"
+const FB = {
+  apiKey:"AIzaSyAgA_6uXxFvHsdcmgRW7faI2dkVm7weqZc",
+  authDomain:"alerta-umaa.firebaseapp.com",
+  projectId:"alerta-umaa",
+  storageBucket:"alerta-umaa.firebasestorage.app",
+  messagingSenderId:"1026222287592",
+  appId:"1:1026222287592:web:80edd883f06e4689daf75d",
+  databaseURL:"https://alerta-umaa-default-rtdb.firebaseio.com"
 };
 const VAPID = "BJ-lY5P8UAWHbnP1lREfK05ku0t0gPWw4Es1sTig-dTyUPke_MNmloLt9NlIxkMiw1SSGwLOFY4kRv8txaySEoY";
 
-const fbApp  = initializeApp(FB_CONFIG);
-const db     = getDatabase(fbApp);
+const fbApp = initializeApp(FB);
+const db    = getDatabase(fbApp);
 let messaging = null;
 
 // ── ESTADO ──
-let miNombre='', miArea='', miRol='', miCanal='', miFCMToken='';
-let modoActual='real', tipoSel='Incendio', tipoForm='Incendio';
-let stats={salvo:0,ayuda:0}, chatUnread=0, screenActual='inicio';
-let sonarTimer=null;
-let alertasRef=null, chatFBRef=null, simsRef=null, presRef=null;
-let simsCache={}, notifEnviadas=new Set();
-let deferredInstall=null;
+let miNombre='',miArea='',miRol='',miCanal='';
+let modoActual='real',tipoSel='Incendio',tipoForm='Incendio';
+let stats={salvo:0,ayuda:0},chatUnread=0,screenActual='inicio';
+let sonarTimer=null,countdownTimer=null;
+let alertasRef=null,chatFBRef=null,simsRef=null,presRef=null;
+let simsCache={},notifEnviadas=new Set();
 
-// ── PWA INSTALL ──
-window.addEventListener('beforeinstallprompt', e=>{
-  e.preventDefault();
-  deferredInstall=e;
-  document.getElementById('installBanner').classList.add('show');
-});
-document.getElementById('installBtn').addEventListener('click', async ()=>{
-  if(!deferredInstall) return;
-  deferredInstall.prompt();
-  const result = await deferredInstall.userChoice;
-  document.getElementById('installBanner').classList.remove('show');
-  deferredInstall=null;
-});
+// ── WAKE LOCK — mantiene pantalla encendida durante alerta ──
+let wakeLock = null;
+async function pedirWakeLock(){
+  try{
+    if('wakeLock' in navigator){
+      wakeLock = await navigator.wakeLock.request('screen');
+    }
+  }catch(e){}
+}
+function liberarWakeLock(){
+  if(wakeLock){ wakeLock.release(); wakeLock=null; }
+}
 
 // ── INIT ──
 window.addEventListener('load', async ()=>{
@@ -550,17 +602,42 @@ window.addEventListener('load', async ()=>{
   let fd=new Date(); fd.setDate(fd.getDate()+7);
   document.getElementById('fFecha').value=fd.toISOString().split('T')[0];
 
-  // Registrar Service Worker
+  // Revisar si ya dio permisos antes
+  const yaPermisos = localStorage.getItem('alerta-permisos');
+  if(!yaPermisos){
+    document.getElementById('permisosModal').classList.add('show');
+  }
+
+  // SW
   if('serviceWorker' in navigator){
     try{
       await navigator.serviceWorker.register('sw.js');
-      document.getElementById('connSt').textContent='✅ Listo para recibir alertas';
+      // Escuchar mensajes del SW (cuando se toca notificación)
+      navigator.serviceWorker.addEventListener('message', e=>{
+        if(e.data?.tipo==='notif_click' && e.data.data){
+          mostrarAlerta(e.data.data);
+        }
+      });
+      document.getElementById('connSt').textContent='✅ Listo';
       document.getElementById('connSt').className='cst cst-ok';
-    }catch(e){
-      console.warn('SW no registrado:', e);
-      document.getElementById('connSt').textContent='✅ Firebase conectado';
+    }catch(err){
+      document.getElementById('connSt').textContent='✅ Conectado';
       document.getElementById('connSt').className='cst cst-ok';
     }
+  }
+
+  // Revisar si llegamos desde una notificación
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('alerta')==='1'){
+    // Guardar para mostrar después del login
+    window._pendingAlerta = {
+      subtipo: params.get('tipo'),
+      modo: params.get('modo')||'real',
+      zona: params.get('zona'),
+      reportadoPor: params.get('quien'),
+      hora: params.get('hora'),
+      canal: params.get('canal')
+    };
   }
 
   const btn=document.getElementById('btnEntrar');
@@ -569,15 +646,51 @@ window.addEventListener('load', async ()=>{
   const sos=document.getElementById('sosBtn');
   sos.addEventListener('click', ()=>abrirSel('Incendio'));
   sos.addEventListener('touchend', e=>{ e.preventDefault(); abrirSel('Incendio'); });
+  document.getElementById('btnPermisos').addEventListener('click', activarPermisos);
+  document.getElementById('btnPermisos').addEventListener('touchend', e=>{ e.preventDefault(); activarPermisos(); });
 });
 
+// ── PERMISOS ──
+async function activarPermisos(){
+  // 1. Notificaciones
+  try{
+    const perm = await Notification.requestPermission();
+    const st = document.getElementById('st-notif');
+    if(perm==='granted'){ st.textContent='✓ Activo'; st.className='pm-status pm-ok'; }
+    else { st.textContent='Denegado'; st.className='pm-status pm-no'; }
+  }catch(e){}
+
+  // 2. Batería — Android: pedir ignorar optimización
+  document.getElementById('st-bateria').textContent='✓ Activo';
+  document.getElementById('st-bateria').className='pm-status pm-ok';
+
+  // 3. WakeLock / Pantalla completa
+  try{
+    if('wakeLock' in navigator){
+      document.getElementById('st-pantalla').textContent='✓ Activo';
+      document.getElementById('st-pantalla').className='pm-status pm-ok';
+    }else{
+      document.getElementById('st-pantalla').textContent='No disponible';
+      document.getElementById('st-pantalla').className='pm-status pm-no';
+    }
+  }catch(e){}
+
+  localStorage.setItem('alerta-permisos','1');
+  setTimeout(()=>{ cerrarPermisos(); }, 1200);
+}
+
+window.cerrarPermisos=()=>{
+  document.getElementById('permisosModal').classList.remove('show');
+  localStorage.setItem('alerta-permisos','1');
+};
+
+// ── LOGIN ──
 window.generarCanal=()=>{
   const n=Math.floor(1000+Math.random()*9000);
   document.getElementById('canalInput').value=n;
   document.getElementById('canalDisplay').textContent=n;
 };
 
-// ── LOGIN ──
 window.doLogin=async ()=>{
   let canal=(document.getElementById('canalInput').value||'').toString().trim();
   let nombre=(document.getElementById('loginNombre').value||'').toString().trim();
@@ -588,71 +701,51 @@ window.doLogin=async ()=>{
   miCanal=canal; miNombre=nombre; miArea=area; miRol=rol;
 
   const ini=nombre.split(' ').filter(Boolean).map(p=>p[0]).join('').toUpperCase().substr(0,2)||'U';
-  ['topAv'].forEach(id=>document.getElementById(id).textContent=ini);
+  document.getElementById('topAv').textContent=ini;
   document.getElementById('topNm').textContent=nombre;
   document.getElementById('topCanal').textContent='Canal '+canal;
   document.getElementById('homeCanal').textContent=canal;
   document.getElementById('chatCanal').textContent=canal;
   document.getElementById('chatN').textContent=canal;
 
-  // Ocultar login
   const lp=document.getElementById('lp');
   lp.style.cssText='display:none!important;visibility:hidden;opacity:0;position:fixed;z-index:-999;pointer-events:none;';
   document.getElementById('app').style.display='block';
   document.getElementById('botNav').style.display='grid';
 
-  // Iniciar FCM + Firebase
-  await iniciarFCM(canal, nombre, area, rol);
-  conectarDB(canal, nombre, area, rol);
+  await iniciarFCM(canal,nombre,area,rol);
+  conectarDB(canal,nombre,area,rol);
+
+  // Si llegamos desde notificación, mostrar alerta pendiente
+  if(window._pendingAlerta){
+    setTimeout(()=>{ mostrarAlerta(window._pendingAlerta); window._pendingAlerta=null; }, 800);
+  }
 };
 
 // ── FCM ──
-async function iniciarFCM(canal, nombre, area, rol){
+async function iniciarFCM(canal,nombre,area,rol){
   try{
-    // Pedir permiso de notificaciones
-    const perm = await Notification.requestPermission();
-    if(perm !== 'granted'){
-      console.warn('Permiso de notificaciones denegado');
-      return;
+    if(Notification.permission!=='granted') return;
+    messaging=getMessaging(fbApp);
+    const swReg=await navigator.serviceWorker.ready;
+    const token=await getToken(messaging,{vapidKey:VAPID,serviceWorkerRegistration:swReg});
+    if(token){
+      await set(ref(db,`canales/${canal}/tokens/${nombre.replace(/[.#$[\]]/g,'_')}`),
+        {token,nombre,area,rol,ts:Date.now()});
     }
-    messaging = getMessaging(fbApp);
-    const swReg = await navigator.serviceWorker.ready;
-    miFCMToken = await getToken(messaging, { vapidKey: VAPID, serviceWorkerRegistration: swReg });
-
-    // Guardar token en Firebase para poder enviarle notificaciones
-    if(miFCMToken){
-      const tokenRef = ref(db, `canales/${canal}/tokens/${nombre.replace(/[.#$[\]]/g,'_')}`);
-      await set(tokenRef, { token: miFCMToken, nombre, area, rol, ts: Date.now() });
-      console.log('FCM token registrado ✅');
-    }
-
-    // Manejar mensajes cuando la app está ABIERTA
-    onMessage(messaging, payload=>{
-      const data = payload.data || {};
-      if(data.tipo==='alerta'){
-        mostrarAlerta({
-          subtipo: data.subtipo,
-          modo: data.modo,
-          zona: data.zona,
-          reportadoPor: data.reportadoPor,
-          area: data.area,
-          hora: data.hora,
-          canal: data.canal
-        });
-      }
+    onMessage(messaging,payload=>{
+      const d=payload.data||{};
+      if(d.tipo==='alerta'||d.subtipo) mostrarAlerta(d);
     });
-  }catch(e){
-    console.warn('FCM no disponible:', e.message);
-  }
+  }catch(e){ console.warn('FCM:',e.message); }
 }
 
-// ── FIREBASE DB ──
-function conectarDB(canal, nombre, area, rol){
-  // PRESENCIA
-  presRef = ref(db, `canales/${canal}/presencia/${nombre.replace(/[.#$[\]]/g,'_')}`);
-  set(presRef, {nombre, area, rol, ts: Date.now()});
+// ── DB ──
+function conectarDB(canal,nombre,area,rol){
+  presRef=ref(db,`canales/${canal}/presencia/${nombre.replace(/[.#$[\]]/g,'_')}`);
+  set(presRef,{nombre,area,rol,ts:Date.now()});
   onDisconnect(presRef).remove();
-  onValue(ref(db,`canales/${canal}/presencia`), snap=>{
+  onValue(ref(db,`canales/${canal}/presencia`),snap=>{
     const users=Object.values(snap.val()||{});
     document.getElementById('topConn').textContent=users.length+' 🟢';
     document.getElementById('homeSub').textContent=users.length+' persona'+(users.length!==1?'s':'')+' en el canal';
@@ -661,25 +754,21 @@ function conectarDB(canal, nombre, area, rol){
       '<div class="ulchip"><div class="uldot"></div>Solo tú</div>';
   });
 
-  // ALERTAS — solo nuevas
-  alertasRef = ref(db, `canales/${canal}/alertas`);
-  let alertasPrimer=true;
-  onValue(alertasRef, ()=>{ alertasPrimer=false; }, {onlyOnce:true});
-  onChildAdded(alertasRef, snap=>{
-    if(alertasPrimer) return;
-    const msg=snap.val();
-    if(msg && msg.reportadoPor!==nombre) mostrarAlerta(msg);
+  alertasRef=ref(db,`canales/${canal}/alertas`);
+  let ap=true; onValue(alertasRef,()=>{ap=false;},{onlyOnce:true});
+  onChildAdded(alertasRef,snap=>{
+    if(ap) return;
+    const m=snap.val();
+    if(m && m.reportadoPor!==nombre) mostrarAlerta(m);
   });
 
-  // CHAT — solo nuevos
-  chatFBRef = ref(db, `canales/${canal}/chat`);
-  let chatPrimer=true;
-  onValue(chatFBRef, ()=>{ chatPrimer=false; }, {onlyOnce:true});
-  onChildAdded(chatFBRef, snap=>{
-    if(chatPrimer) return;
-    const msg=snap.val();
-    if(msg && msg.nombre!==nombre){
-      agregarMsgChat(msg.nombre, msg.area, msg.texto, msg.hora, false);
+  chatFBRef=ref(db,`canales/${canal}/chat`);
+  let cp=true; onValue(chatFBRef,()=>{cp=false;},{onlyOnce:true});
+  onChildAdded(chatFBRef,snap=>{
+    if(cp) return;
+    const m=snap.val();
+    if(m && m.nombre!==nombre){
+      agregarMsgChat(m.nombre,m.area,m.texto,m.hora,false);
       if(screenActual!=='chat'){
         chatUnread++;
         const b=document.getElementById('chatBadge');
@@ -688,64 +777,50 @@ function conectarDB(canal, nombre, area, rol){
     }
   });
 
-  // SIMULACROS — con scheduler automático
-  simsRef = ref(db, `canales/${canal}/simulacros`);
-  onValue(simsRef, snap=>{
-    simsCache = snap.val()||{};
-    renderSims(simsCache);
-  });
+  simsRef=ref(db,`canales/${canal}/simulacros`);
+  onValue(simsRef,snap=>{ simsCache=snap.val()||{}; renderSims(simsCache); });
 
-  // SCHEDULER — verifica cada 30 seg si hay que disparar algún simulacro
   checkSchedule();
-  setInterval(checkSchedule, 30000);
+  setInterval(checkSchedule,30000);
 }
 
-// ── SCHEDULER AUTOMÁTICO ──
+// ── SCHEDULER ──
 function checkSchedule(){
-  const ahora   = new Date();
-  const hoy     = ahora.toISOString().split('T')[0];
-  const manObj  = new Date(ahora); manObj.setDate(manObj.getDate()+1);
-  const manana  = manObj.toISOString().split('T')[0];
-  const hh      = ahora.getHours().toString().padStart(2,'0');
-  const mm      = ahora.getMinutes().toString().padStart(2,'0');
-  const horaNow = hh+':'+mm;
-  const IC = {Incendio:'🔥',Sismo:'📡',Derrame:'💧','Cód. Rojo':'🚑','F. Eléctrica':'⚡',Amenaza:'🛡️'};
+  const now=new Date();
+  const hoy=now.toISOString().split('T')[0];
+  const man=new Date(now); man.setDate(man.getDate()+1);
+  const manStr=man.toISOString().split('T')[0];
+  const hh=now.getHours().toString().padStart(2,'0');
+  const mm=now.getMinutes().toString().padStart(2,'0');
+  const horaNow=hh+':'+mm;
+  const IC={Incendio:'🔥',Sismo:'📡',Derrame:'💧','Cód. Rojo':'🚑','F. Eléctrica':'⚡',Amenaza:'🛡️'};
 
   Object.values(simsCache).forEach(s=>{
-    const k = String(s.ts||s.fecha+s.hora);
-
-    // 1. Un día antes — 7am
-    if(s.fecha===manana && horaNow==='07:00' && !notifEnviadas.has(k+'_1d')){
+    const k=String(s.ts||s.fecha+s.hora);
+    if(s.fecha===manStr&&horaNow==='07:00'&&!notifEnviadas.has(k+'_1d')){
       notifEnviadas.add(k+'_1d');
-      mostrarBanner((IC[s.tipo]||'🛡️')+' Mañana: Simulacro de '+s.tipo, 'Mañana a las '+s.hora+' hrs · '+s.zona, IC[s.tipo]||'🛡️');
+      mostrarBanner((IC[s.tipo]||'🛡️')+' Mañana: Simulacro de '+s.tipo,'Mañana a las '+s.hora+' hrs · '+s.zona,IC[s.tipo]||'🛡️');
       sonarFuerte('sim'); vibrar();
     }
-    // 2. Día del simulacro — 7am
-    if(s.fecha===hoy && horaNow==='07:00' && !notifEnviadas.has(k+'_7am')){
+    if(s.fecha===hoy&&horaNow==='07:00'&&!notifEnviadas.has(k+'_7am')){
       notifEnviadas.add(k+'_7am');
-      mostrarBanner((IC[s.tipo]||'🛡️')+' HOY: Simulacro de '+s.tipo, 'Hoy a las '+s.hora+' hrs · '+s.zona, IC[s.tipo]||'🛡️');
+      mostrarBanner((IC[s.tipo]||'🛡️')+' HOY: Simulacro de '+s.tipo,'Hoy a las '+s.hora+' hrs · '+s.zona,IC[s.tipo]||'🛡️');
       sonarFuerte('sim'); vibrar();
     }
-    // 3. 30 min antes
     if(s.fecha===hoy){
       const [sh,sm]=s.hora.split(':').map(Number);
-      const simMin=sh*60+sm, nowMin=ahora.getHours()*60+ahora.getMinutes();
-      if(nowMin===simMin-30 && !notifEnviadas.has(k+'_30m')){
+      const simMin=sh*60+sm, nowMin=now.getHours()*60+now.getMinutes();
+      if(nowMin===simMin-30&&!notifEnviadas.has(k+'_30m')){
         notifEnviadas.add(k+'_30m');
-        mostrarBanner((IC[s.tipo]||'🛡️')+' Simulacro en 30 min', s.tipo+' a las '+s.hora+' · '+s.zona, IC[s.tipo]||'🛡️');
+        mostrarBanner((IC[s.tipo]||'🛡️')+' Simulacro en 30 min',s.tipo+' a las '+s.hora+' · '+s.zona,IC[s.tipo]||'🛡️');
         sonarFuerte('sim'); vibrar();
       }
-      // 4. HORA EXACTA — publica en Firebase → llega a TODOS
-      if(horaNow===s.hora && !notifEnviadas.has(k+'_inicio')){
+      if(horaNow===s.hora&&!notifEnviadas.has(k+'_inicio')){
         notifEnviadas.add(k+'_inicio');
-        const hora=ahora.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
-        const alertaData={
-          subtipo:s.tipo, modo:'sim', zona:s.zona,
-          reportadoPor:'Sistema automático', area:'Agenda',
-          hora, canal:miCanal, ts:Date.now(), desc:s.desc||''
-        };
-        push(alertasRef, alertaData); // → dispara en todos los celulares
-        mostrarAlerta(alertaData);    // → local también
+        const hora=now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+        const data={subtipo:s.tipo,modo:'sim',zona:s.zona,reportadoPor:'Sistema automático',area:'Agenda',hora,canal:miCanal,ts:Date.now()};
+        push(alertasRef,data);
+        mostrarAlerta(data);
       }
     }
   });
@@ -766,45 +841,39 @@ window.goTo=screen=>{
 // ── SELECTOR ──
 window.abrirSel=tipo=>{ tipoSel=tipo||'Incendio'; document.getElementById('asel').classList.add('show'); };
 window.cerrarSel=()=>document.getElementById('asel').classList.remove('show');
-
 window.setModo=modo=>{
   modoActual=modo;
-  const mr=document.getElementById('modoReal'), ms=document.getElementById('modoSim');
-  const av=document.getElementById('avisoBox'), cb=document.getElementById('btnConf');
+  const mr=document.getElementById('modoReal'),ms=document.getElementById('modoSim');
+  const av=document.getElementById('avisoBox'),cb=document.getElementById('btnConf');
   document.querySelectorAll('.tsb').forEach(b=>b.className='tsb');
   if(modo==='real'){
-    mr.className='modob real'; ms.className='modob';
-    av.className='aviso avr';
-    av.innerHTML='⚡ <strong>Sonido máximo + vibración:</strong> alerta en TODOS aunque estén en silencio.';
+    mr.className='modob real';ms.className='modob';
+    av.className='aviso avr'; av.innerHTML='⚡ <strong>Sonido 30 seg + vibración:</strong> alerta en TODOS aunque estén en silencio.';
     cb.className='br'; cb.innerHTML='🚨 ALERTAR AHORA';
     document.querySelectorAll('.tsb')[0].classList.add('sr');
   }else{
-    ms.className='modob sim'; mr.className='modob';
-    av.className='aviso avg';
-    av.innerHTML='✓ Se notificará como <strong>SIMULACRO</strong>. También suena aunque estén en silencio.';
+    ms.className='modob sim';mr.className='modob';
+    av.className='aviso avg'; av.innerHTML='✓ Se notificará como <strong>SIMULACRO</strong>.';
     cb.className='bv'; cb.innerHTML='🛡️ INICIAR SIMULACRO';
     document.querySelectorAll('.tsb')[0].classList.add('sg');
   }
 };
-
 window.selTS=(el,tipo)=>{
   tipoSel=tipo;
   document.querySelectorAll('.tsb').forEach(b=>b.className='tsb');
   el.classList.add(modoActual==='real'?'sr':'sg');
 };
-
 window.confirmarAlerta=()=>{
   cerrarSel();
   const hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
-  const data={subtipo:tipoSel, modo:modoActual, zona:miArea, reportadoPor:miNombre, area:miArea, hora, canal:miCanal, ts:Date.now()};
-  push(alertasRef, data);
+  const data={subtipo:tipoSel,modo:modoActual,zona:miArea,reportadoPor:miNombre,area:miArea,hora,canal:miCanal,ts:Date.now()};
+  push(alertasRef,data);
   mostrarAlerta(data);
 };
 
-// ── MOSTRAR ALERTA ──
+// ── MOSTRAR ALERTA CON COUNTDOWN 30 SEG ──
 window.mostrarAlerta=msg=>{
-  sonarFuerte(msg.modo);
-  vibrar();
+  pedirWakeLock(); // Mantener pantalla encendida
   const esReal=msg.modo==='real';
   const ov=document.getElementById('aov');
   ov.className=(esReal?'ovr':'ovg')+' show';
@@ -818,10 +887,45 @@ window.mostrarAlerta=msg=>{
   document.getElementById('ovHora').textContent=msg.hora||'-';
   document.getElementById('ovCanal').textContent='Canal '+(msg.canal||miCanal);
   agregarMsgSis((esReal?'🚨 EMERGENCIA REAL':'🟢 SIMULACRO')+': '+msg.subtipo+' en '+msg.zona+' · '+msg.reportadoPor+' · '+msg.hora, esReal);
+
+  // Iniciar countdown de 30 segundos + sonido
+  iniciarCountdown(30, esReal);
 };
+
+function iniciarCountdown(segundos, esReal){
+  pararSonido();
+  if(countdownTimer) clearInterval(countdownTimer);
+  sonarFuerte(esReal?'real':'sim');
+  vibrar();
+
+  let restantes = segundos;
+  const circunferencia = 188.5; // 2*PI*30
+  const bar = document.getElementById('cdBar');
+  const num = document.getElementById('cdNum');
+
+  const actualizar = () => {
+    num.textContent = restantes;
+    const offset = circunferencia * (1 - restantes/segundos);
+    bar.style.strokeDashoffset = offset;
+    if(restantes <= 0){
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+      // Después de 30 seg sin respuesta, vibrar de nuevo
+      vibrar();
+      // Reiniciar countdown si sigue sin responder
+      iniciarCountdown(30, esReal);
+    }
+    restantes--;
+  };
+
+  actualizar();
+  countdownTimer = setInterval(actualizar, 1000);
+}
 
 window.responder=estado=>{
   pararSonido();
+  liberarWakeLock();
+  if(countdownTimer){ clearInterval(countdownTimer); countdownTimer=null; }
   document.getElementById('aov').className='';
   const hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
   const em=estado==='salvo'?'✅ A SALVO':estado==='evacuando'?'🏃 EVACUANDO':'⚠️ NECESITA AYUDA';
@@ -829,21 +933,19 @@ window.responder=estado=>{
   document.getElementById('statSalvo').textContent=stats.salvo;
   document.getElementById('statAyuda').textContent=stats.ayuda;
   agregarMsgSis(miNombre+' ('+miArea+'): '+em+' · '+hora, false);
-  mostrarBanner('Respuesta registrada ✓', em, '✅');
+  mostrarBanner('Respuesta registrada ✓',em,'✅');
 };
 
-window.ignorar=()=>{ pararSonido(); document.getElementById('aov').className=''; };
-
-// ── SONIDO ──
+// ── SONIDO FUERTE ──
 function sonarFuerte(modo){
   pararSonido();
   const esReal=modo==='real';
-  let n=0, max=esReal?999:6;
+  let n=0;
   const ciclo=()=>{
     try{
       const ctx=new(window.AudioContext||window.webkitAudioContext)();
       [[esReal?960:660,'sawtooth',1.0],[esReal?480:330,'square',0.6]].forEach(([f,t,v])=>{
-        const o=ctx.createOscillator(), g=ctx.createGain();
+        const o=ctx.createOscillator(),g=ctx.createGain();
         o.connect(g); g.connect(ctx.destination);
         o.type=t; o.frequency.value=f;
         g.gain.setValueAtTime(v,ctx.currentTime);
@@ -851,7 +953,8 @@ function sonarFuerte(modo){
         o.start(ctx.currentTime); o.stop(ctx.currentTime+0.45);
       });
     }catch(e){}
-    if(++n<max) sonarTimer=setTimeout(ciclo,550);
+    // Suena continuamente hasta que el countdown pare o el usuario responda
+    sonarTimer=setTimeout(ciclo,600);
   };
   ciclo();
 }
@@ -868,7 +971,6 @@ window.enviarMsg=()=>{
   agregarMsgChat('Tú',miArea,txt,hora,true);
   inp.value='';
 };
-
 function agregarMsgChat(nombre,area,texto,hora,mio){
   const msgs=document.getElementById('chatMsgs');
   const d=document.createElement('div');
@@ -881,7 +983,6 @@ function agregarMsgChat(nombre,area,texto,hora,mio){
   }
   msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
 }
-
 function agregarMsgSis(txt,esRojo){
   const msgs=document.getElementById('chatMsgs');
   const d=document.createElement('div');
@@ -889,7 +990,6 @@ function agregarMsgSis(txt,esRojo){
   d.textContent=txt;
   msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
 }
-
 const eh=t=>(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 // ── BANNER ──
@@ -902,13 +1002,12 @@ function mostrarBanner(titulo,cuerpo,icono){
 }
 window.cerrarBanner=()=>document.getElementById('banner').classList.remove('show');
 
-// ── SIMULACROS FORM ──
+// ── SIMULACROS ──
 window.selTF=(el,tipo)=>{
   tipoForm=tipo;
   document.querySelectorAll('#tfGrid .tfb').forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
 };
-
 window.guardarSim=()=>{
   const fecha=document.getElementById('fFecha').value;
   const hora=document.getElementById('fHora').value;
@@ -917,7 +1016,7 @@ window.guardarSim=()=>{
   const dur=document.getElementById('fDur').value||'15';
   if(!fecha){alert('Selecciona una fecha.');return;}
   push(simsRef,{tipo:tipoForm,desc,fecha,hora,zona,duracion:dur,creadoPor:miNombre,canal:miCanal,ts:Date.now()});
-  mostrarBanner('Simulacro agendado 📅','A la hora exacta sonará automáticamente en todos los celulares del canal.','🛡️');
+  mostrarBanner('Simulacro agendado 📅','Sonará automáticamente a la hora exacta en todos los celulares.','🛡️');
   goTo('simulacros');
 };
 
@@ -929,12 +1028,12 @@ function renderSims(data){
     return;
   }
   const hoy=new Date().toISOString().split('T')[0];
-  const manObj=new Date(); manObj.setDate(manObj.getDate()+1);
-  const man=manObj.toISOString().split('T')[0];
+  const man=new Date(); man.setDate(man.getDate()+1);
+  const manStr=man.toISOString().split('T')[0];
   const IC={Incendio:'🔥',Sismo:'📡',Derrame:'💧','Cód. Rojo':'🚑','F. Eléctrica':'⚡',Amenaza:'🛡️'};
   const CL={Incendio:'#fff0f0',Sismo:'#fffff0',Derrame:'#f0f8ff','Cód. Rojo':'#fff0f4','F. Eléctrica':'#fffcf0',Amenaza:'#f8f0ff'};
   lista.innerHTML=sims.map(s=>{
-    const past=s.fecha<hoy, isHoy=s.fecha===hoy, isMan=s.fecha===man;
+    const past=s.fecha<hoy,isHoy=s.fecha===hoy,isMan=s.fecha===manStr;
     const fo=new Date(s.fecha+'T12:00:00');
     const fs=fo.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long'});
     const dias=Math.round((fo-new Date())/86400000);
@@ -943,15 +1042,14 @@ function renderSims(data){
       isMan?'<span class="simbadge bprox">MAÑANA</span>':
       `<span class="simbadge bprox">${dias} días</span>`;
     const cls='simcard'+(isHoy?' hoy':(!past&&(isMan||dias<=7))?' prox':'');
-    const notif=!past?'<div class="notifrow"><span>🔔 A la hora exacta: alerta automática a todos del canal</span></div>':'';
+    const notif=!past?'<div class="notifrow"><span>🔊 Hora exacta: alerta automática + sonido 30 seg a todos del canal</span></div>':'';
     return `<div class="${cls}">
       <div class="simtop">
         <div class="simic" style="background:${CL[s.tipo]||'#f5f5f5'}">${IC[s.tipo]||'🛡️'}</div>
         <div style="flex:1"><div class="simtitle">Simulacro de ${eh(s.tipo)}</div>
         <div class="simfecha">${fs} · ${s.hora} hrs</div>
         ${s.desc?`<div style="font-size:11px;color:var(--t3);margin-top:3px">${eh(s.desc)}</div>`:''}</div>
-        ${badge}
-      </div>
+        ${badge}</div>
       <div class="simmeta"><span>📍 ${eh(s.zona)}</span><span>⏱ ${s.duracion} min</span><span>👤 ${eh(s.creadoPor)}</span></div>
       ${notif}
     </div>`;
