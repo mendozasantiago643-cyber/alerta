@@ -573,35 +573,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
     <button class="ovbtn" onclick="responder('ayuda')">⚠️ NECESITO AYUDA</button>
   </div>
 </div>
+<!-- Firebase compat SDK — no requiere imports, funciona en todos los navegadores -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 
 <script>
-// Bridge — expone funciones del módulo al scope global
-// Necesario para que onclick="" funcione con type="module"
-function doLogin(){ if(window._doLogin) window._doLogin(); else setTimeout(doLogin,100); }
-function selRol(el,rol){ if(window._selRol) window._selRol(el,rol); }
-function abrirSel(t){ if(window._abrirSel) window._abrirSel(t); }
-function setModo(m){ if(window._setModo) window._setModo(m); }
-function selTS(el,t){ if(window._selTS) window._selTS(el,t); }
-function confirmarAlerta(){ if(window._confirmarAlerta) window._confirmarAlerta(); }
-function cerrarSel(){ if(window._cerrarSel) window._cerrarSel(); }
-function responder(e){ if(window._responder) window._responder(e); }
-function ignorar(){ if(window._ignorar) window._ignorar(); }
-function enviarMsg(){ if(window._enviarMsg) window._enviarMsg(); }
-function goTo(s){ if(window._goTo) window._goTo(s); }
-function selTF(el,t){ if(window._selTF) window._selTF(el,t); }
-function guardarSim(){ if(window._guardarSim) window._guardarSim(); }
-function cerrarBanner(){ if(window._cerrarBanner) window._cerrarBanner(); }
-function cerrarPermisos(){ if(window._cerrarPermisos) window._cerrarPermisos(); }
-function generarCanal(){ if(window._generarCanal) window._generarCanal(); }
-</script>
-
-<script type="module">
-import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getMessaging, getToken, onMessage }
-                             from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js';
-import { getDatabase, ref, push, onChildAdded, set, onValue, onDisconnect }
-                             from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
-
 const FB = {
   apiKey:"AIzaSyAgA_6uXxFvHsdcmgRW7faI2dkVm7weqZc",
   authDomain:"alerta-umaa.firebaseapp.com",
@@ -612,250 +589,201 @@ const FB = {
   databaseURL:"https://alerta-umaa-default-rtdb.firebaseio.com"
 };
 const VAPID = "BJ-lY5P8UAWHbnP1lREfK05ku0t0gPWw4Es1sTig-dTyUPke_MNmloLt9NlIxkMiw1SSGwLOFY4kRv8txaySEoY";
+const CANAL_UMAA = 'UMAA-AGS-2026';
 
-const fbApp = initializeApp(FB);
-const db    = getDatabase(fbApp);
+firebase.initializeApp(FB);
+const db = firebase.database();
 let messaging = null;
 
-// ── ESTADO ──
-let miNombre='',miArea='',miRol='',miCanal='';
-let modoActual='real',tipoSel='Incendio',tipoForm='Incendio';
-let stats={salvo:0,ayuda:0},chatUnread=0,screenActual='inicio';
-let sonarTimer=null,countdownTimer=null;
-let alertasRef=null,chatFBRef=null,simsRef=null,presRef=null;
-let simsCache={},notifEnviadas=new Set();
+// ESTADO
+let miNombre='', miArea='', miRol='', miCanal=CANAL_UMAA;
+let modoActual='real', tipoSel='Incendio', tipoForm='Incendio';
+let stats={salvo:0,evac:0,ayuda:0}, chatUnread=0, screenActual='inicio';
+let sonarTimer=null, countdownTimer=null;
+let alertasRef=null, chatFBRef=null, simsRef=null, presRef=null;
+let simsCache={}, notifEnviadas=new Set();
+let wakeLock=null;
 
-// ── WAKE LOCK — mantiene pantalla encendida durante alerta ──
-let wakeLock = null;
+// WAKE LOCK
 async function pedirWakeLock(){
-  try{
-    if('wakeLock' in navigator){
-      wakeLock = await navigator.wakeLock.request('screen');
-    }
-  }catch(e){}
+  try{ if('wakeLock' in navigator) wakeLock=await navigator.wakeLock.request('screen'); }catch(e){}
 }
-function liberarWakeLock(){
-  if(wakeLock){ wakeLock.release(); wakeLock=null; }
-}
+function liberarWakeLock(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } }catch(e){} }
 
-// ── INIT ──
-window.addEventListener('load', async ()=>{
+// INIT
+window.addEventListener('load', function(){
   generarCanal();
-  let fd=new Date(); fd.setDate(fd.getDate()+7);
+  var fd=new Date(); fd.setDate(fd.getDate()+7);
   document.getElementById('fFecha').value=fd.toISOString().split('T')[0];
-
-  // Revisar si ya dio permisos antes
-  const yaPermisos = localStorage.getItem('alerta-permisos');
-  if(!yaPermisos){
+  if(!localStorage.getItem('alerta-permisos')){
     document.getElementById('permisosModal').classList.add('show');
   }
-
-  // SW — no bloqueante, corre en segundo plano
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js')
-      .then(()=>{
-        navigator.serviceWorker.addEventListener('message', e=>{
-          if(e.data?.tipo==='notif_click' && e.data.data){
-            mostrarAlerta(e.data.data);
-          }
-        });
-      })
-      .catch(err=>console.warn('SW:',err));
+    navigator.serviceWorker.register('sw.js').catch(function(e){ console.warn('SW:',e); });
   }
-
-  // Revisar si llegamos desde una notificación
-  const params = new URLSearchParams(window.location.search);
+  var params=new URLSearchParams(window.location.search);
   if(params.get('alerta')==='1'){
-    // Guardar para mostrar después del login
-    window._pendingAlerta = {
-      subtipo: params.get('tipo'),
-      modo: params.get('modo')||'real',
-      zona: params.get('zona'),
-      reportadoPor: params.get('quien'),
-      hora: params.get('hora'),
-      canal: params.get('canal')
+    window._pendingAlerta={
+      subtipo:params.get('tipo'), modo:params.get('modo')||'real',
+      zona:params.get('zona'), reportadoPor:params.get('quien'),
+      hora:params.get('hora'), canal:params.get('canal')
     };
   }
-
-  const sos=document.getElementById('sosBtn');
-  sos.addEventListener('click', ()=>abrirSel('Incendio'));
-  sos.addEventListener('touchend', e=>{ e.preventDefault(); abrirSel('Incendio'); });
-  // Make doLogin global explicitly
-  window.doLogin = window.doLogin || doLogin;
-  document.getElementById('btnPermisos').addEventListener('click', activarPermisos);
-  document.getElementById('btnPermisos').addEventListener('touchend', e=>{ e.preventDefault(); activarPermisos(); });
 });
 
-// ── PERMISOS ──
+// CANAL DISPLAY
+function generarCanal(){
+  document.getElementById('canalDisplay') && (document.getElementById('canalDisplay').textContent='UMAA-AGS-2026');
+}
+
+// PERMISOS
 async function activarPermisos(){
-  // 1. Notificaciones
   try{
-    const perm = await Notification.requestPermission();
-    const st = document.getElementById('st-notif');
+    var perm=await Notification.requestPermission();
+    var st=document.getElementById('st-notif');
     if(perm==='granted'){ st.textContent='✓ Activo'; st.className='pm-status pm-ok'; }
     else { st.textContent='Denegado'; st.className='pm-status pm-no'; }
   }catch(e){}
-
-  // 2. Batería — Android: pedir ignorar optimización
   document.getElementById('st-bateria').textContent='✓ Activo';
   document.getElementById('st-bateria').className='pm-status pm-ok';
-
-  // 3. WakeLock / Pantalla completa
-  try{
-    if('wakeLock' in navigator){
-      document.getElementById('st-pantalla').textContent='✓ Activo';
-      document.getElementById('st-pantalla').className='pm-status pm-ok';
-    }else{
-      document.getElementById('st-pantalla').textContent='No disponible';
-      document.getElementById('st-pantalla').className='pm-status pm-no';
-    }
-  }catch(e){}
-
+  document.getElementById('st-pantalla').textContent='wakeLock' in navigator ? '✓ Activo' : 'No disponible';
+  document.getElementById('st-pantalla').className='pm-status '+('wakeLock' in navigator ? 'pm-ok':'pm-no');
   localStorage.setItem('alerta-permisos','1');
-  setTimeout(()=>{ cerrarPermisos(); }, 1200);
+  setTimeout(cerrarPermisos, 1200);
 }
 
-window._cerrarPermisos=()=>{
+function cerrarPermisos(){
   document.getElementById('permisosModal').classList.remove('show');
   localStorage.setItem('alerta-permisos','1');
-};
+}
 
-// ── LOGIN ──
-// Canal fijo institucional — todos conectados al mismo canal
-const CANAL_UMAA = 'UMAA-AGS-2026';
-
-window._selRol=(el,rol)=>{
-  document.querySelectorAll('.rol-opt').forEach(b=>b.classList.remove('sel'));
+// LOGIN
+function selRol(el, rol){
+  document.querySelectorAll('.rol-opt').forEach(function(b){ b.classList.remove('sel'); });
   el.classList.add('sel');
-  document.getElementById('loginRol').value=rol;
-};
+  document.getElementById('loginRol').value = rol;
+}
 
-window._doLogin=async ()=>{
-  let nombre=(document.getElementById('loginNombre').value||'').toString().trim();
-  let area=(document.getElementById('loginArea').value||'').toString().trim();
-  let rol=(document.getElementById('loginRol').value||'colaborador');
-  if(!nombre){ alert('Por favor escribe tu nombre.'); return; }
-  if(!area){ alert('Por favor escribe tu área.'); return; }
-  const canal = CANAL_UMAA;
-  miCanal=canal; miNombre=nombre; miArea=area; miRol=rol;
+function doLogin(){
+  var nombre = (document.getElementById('loginNombre').value||'').trim();
+  var area   = (document.getElementById('loginArea').value||'').trim();
+  var rol    = document.getElementById('loginRol').value || 'colaborador';
+  if(!nombre){ alert('Por favor escribe tu nombre completo.'); return; }
+  if(!area)  { alert('Por favor escribe tu área o servicio.'); return; }
 
-  const ini=nombre.split(' ').filter(Boolean).map(p=>p[0]).join('').toUpperCase().substr(0,2)||'U';
+  miNombre=nombre; miArea=area; miRol=rol; miCanal=CANAL_UMAA;
+
+  var rolIC={colaborador:'👤',brigadista:'🦺',jefe:'⭐',admin:'🏥'};
+  var ini=nombre.split(' ').filter(Boolean).map(function(p){return p[0];}).join('').toUpperCase().substr(0,2)||'U';
   document.getElementById('topAv').textContent=ini;
   document.getElementById('topNm').textContent=nombre;
-  const rolIC2={colaborador:'👤',brigadista:'🦺',jefe:'⭐',admin:'🏥'};
-  document.getElementById('topRolBadge').textContent=(rolIC2[rol]||'👤')+' '+rol;
+  document.getElementById('topRolBadge').textContent=(rolIC[rol]||'👤')+' '+rol;
   document.getElementById('homeCanal').textContent='UMAA AGS';
   document.getElementById('chatCanal').textContent='UMAA AGS';
   document.getElementById('chatN').textContent='UMAA AGS';
 
-  const lp=document.getElementById('lp');
+  // Ocultar login — todas las formas posibles
+  var lp=document.getElementById('lp');
   lp.style.display='none';
   lp.style.visibility='hidden';
-  lp.style.opacity='0';
-  lp.style.zIndex='-999';
-  lp.style.pointerEvents='none';
-  lp.setAttribute('hidden','');
-  const appEl=document.getElementById('app');
-  appEl.style.display='block';
-  appEl.removeAttribute('hidden');
-  const navEl=document.getElementById('botNav');
-  navEl.style.display='grid';
+  lp.hidden=true;
+  document.getElementById('app').style.display='block';
+  document.getElementById('botNav').style.display='grid';
 
-  // FCM en segundo plano — no bloquea el login
-  iniciarFCM(canal,nombre,area,rol).catch(e=>console.warn('FCM:',e));
-  conectarDB(canal,nombre,area,rol);
+  // FCM en segundo plano
+  iniciarFCM().catch(function(e){ console.warn('FCM:',e); });
+  conectarDB();
 
-  // Si llegamos desde notificación, mostrar alerta pendiente
   if(window._pendingAlerta){
-    setTimeout(()=>{ mostrarAlerta(window._pendingAlerta); window._pendingAlerta=null; }, 800);
+    setTimeout(function(){ mostrarAlerta(window._pendingAlerta); window._pendingAlerta=null; }, 800);
   }
-};
-
-// ── FCM ──
-async function iniciarFCM(canal,nombre,area,rol){
-  try{
-    if(Notification.permission!=='granted') return;
-    messaging=getMessaging(fbApp);
-    const swReg=await navigator.serviceWorker.ready;
-    const token=await getToken(messaging,{vapidKey:VAPID,serviceWorkerRegistration:swReg});
-    if(token){
-      await set(ref(db,`canales/${canal}/tokens/${nombre.replace(/[.#$[\]]/g,'_')}`),
-        {token,nombre,area,rol,ts:Date.now()});
-    }
-    onMessage(messaging,payload=>{
-      const d=payload.data||{};
-      if(d.tipo==='alerta'||d.subtipo) mostrarAlerta(d);
-    });
-  }catch(e){ console.warn('FCM:',e.message); }
 }
 
-// ── DB ──
-function conectarDB(canal,nombre,area,rol){
-  presRef=ref(db,`canales/${canal}/presencia/${nombre.replace(/[.#$[\]]/g,'_')}`);
-  set(presRef,{nombre,area,rol,ts:Date.now()});
-  onDisconnect(presRef).remove();
-  onValue(ref(db,`canales/${canal}/presencia`),snap=>{
-    const users=Object.values(snap.val()||{});
+// FCM
+async function iniciarFCM(){
+  try{
+    if(Notification.permission!=='granted') return;
+    messaging = firebase.messaging();
+    var swReg = await navigator.serviceWorker.ready;
+    var token = await messaging.getToken({vapidKey:VAPID, serviceWorkerRegistration:swReg});
+    if(token){
+      db.ref('canales/'+miCanal+'/tokens/'+miNombre.replace(/[.#$[\]]/g,'_'))
+        .set({token:token, nombre:miNombre, area:miArea, rol:miRol, ts:Date.now()});
+    }
+    messaging.onMessage(function(payload){
+      var d=payload.data||{};
+      if(d.subtipo) mostrarAlerta(d);
+    });
+  }catch(e){ console.warn('FCM error:',e.message); }
+}
+
+// DB
+function conectarDB(){
+  presRef = db.ref('canales/'+miCanal+'/presencia/'+miNombre.replace(/[.#$[\]]/g,'_'));
+  presRef.set({nombre:miNombre, area:miArea, rol:miRol, ts:Date.now()});
+  presRef.onDisconnect().remove();
+
+  db.ref('canales/'+miCanal+'/presencia').on('value', function(snap){
+    var users=Object.values(snap.val()||{});
     document.getElementById('topConn').textContent=users.length+' 🟢';
     document.getElementById('homeSub').textContent=users.length+' persona'+(users.length!==1?'s':'')+' conectada'+(users.length!==1?'s':'')+' ahora';
-    // Iconos por rol
-    const rolIC={colaborador:'👤',brigadista:'🦺',jefe:'⭐',admin:'🏥'};
-    const rolCL={colaborador:'var(--v)',brigadista:'#ff9800',jefe:'var(--r)',admin:'#8844cc'};
+    var rolIC={colaborador:'👤',brigadista:'🦺',jefe:'⭐',admin:'🏥'};
+    var rolCL={colaborador:'var(--v)',brigadista:'#ff9800',jefe:'var(--r)',admin:'#8844cc'};
     document.getElementById('usersLive').innerHTML=
-      users.map(u=>`
-        <div class="ulchip" style="border-color:${rolCL[u.rol]||'var(--vm)'};background:white">
-          <span>${rolIC[u.rol]||'👤'}</span>
-          <div>
-            <div style="font-size:11px;font-weight:700;color:var(--t)">${u.nombre}</div>
-            <div style="font-size:9px;color:var(--t3)">${u.area} · ${u.rol}</div>
-          </div>
-        </div>`).join('')||
-      '<div class="ulchip"><div class="uldot"></div>Solo tú conectado</div>';
+      users.map(function(u){
+        return '<div class="ulchip" style="border-color:'+( rolCL[u.rol]||'var(--vm)')+';background:white;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 12px">'+
+          '<div style="display:flex;align-items:center;gap:5px"><span>'+(rolIC[u.rol]||'👤')+'</span><span style="font-size:12px;font-weight:700;color:var(--t)">'+u.nombre+'</span></div>'+
+          '<div style="font-size:10px;color:var(--t3);margin-left:20px">'+u.area+' · '+u.rol+'</div></div>';
+      }).join('') || '<div class="ulchip"><div class="uldot"></div>Solo tú</div>';
   });
 
-  alertasRef=ref(db,`canales/${canal}/alertas`);
-  let ap=true; onValue(alertasRef,()=>{ap=false;},{onlyOnce:true});
-  onChildAdded(alertasRef,snap=>{
-    if(ap) return;
-    const m=snap.val();
-    if(m && m.reportadoPor!==nombre) mostrarAlerta(m);
+  // ALERTAS — solo nuevas
+  alertasRef = db.ref('canales/'+miCanal+'/alertas');
+  var alertasPrimer=true;
+  alertasRef.once('value', function(){ alertasPrimer=false; });
+  alertasRef.on('child_added', function(snap){
+    if(alertasPrimer) return;
+    var m=snap.val();
+    if(m && m.reportadoPor!==miNombre) mostrarAlerta(m);
   });
 
-  chatFBRef=ref(db,`canales/${canal}/chat`);
-  let cp=true; onValue(chatFBRef,()=>{cp=false;},{onlyOnce:true});
-  onChildAdded(chatFBRef,snap=>{
-    if(cp) return;
-    const m=snap.val();
-    if(m && m.nombre!==nombre){
+  // CHAT — solo nuevos
+  chatFBRef = db.ref('canales/'+miCanal+'/chat');
+  var chatPrimer=true;
+  chatFBRef.once('value', function(){ chatPrimer=false; });
+  chatFBRef.on('child_added', function(snap){
+    if(chatPrimer) return;
+    var m=snap.val();
+    if(m && m.nombre!==miNombre){
       agregarMsgChat(m.nombre,m.area,m.texto,m.hora,false);
       if(screenActual!=='chat'){
         chatUnread++;
-        const b=document.getElementById('chatBadge');
+        var b=document.getElementById('chatBadge');
         b.textContent=chatUnread; b.classList.add('show');
       }
     }
   });
 
-  simsRef=ref(db,`canales/${canal}/simulacros`);
-  onValue(simsRef,snap=>{ simsCache=snap.val()||{}; renderSims(simsCache); });
+  // SIMULACROS
+  simsRef = db.ref('canales/'+miCanal+'/simulacros');
+  simsRef.on('value', function(snap){ simsCache=snap.val()||{}; renderSims(simsCache); });
 
   checkSchedule();
-  setInterval(checkSchedule,30000);
+  setInterval(checkSchedule, 30000);
 }
 
-// ── SCHEDULER ──
+// SCHEDULER
 function checkSchedule(){
-  const now=new Date();
-  const hoy=now.toISOString().split('T')[0];
-  const man=new Date(now); man.setDate(man.getDate()+1);
-  const manStr=man.toISOString().split('T')[0];
-  const hh=now.getHours().toString().padStart(2,'0');
-  const mm=now.getMinutes().toString().padStart(2,'0');
-  const horaNow=hh+':'+mm;
-  const IC={Incendio:'🔥',Sismo:'📡',Derrame:'💧','Cód. Rojo':'🚑','F. Eléctrica':'⚡',Amenaza:'🛡️'};
-
-  Object.values(simsCache).forEach(s=>{
-    const k=String(s.ts||s.fecha+s.hora);
+  var now=new Date();
+  var hoy=now.toISOString().split('T')[0];
+  var man=new Date(now); man.setDate(man.getDate()+1);
+  var manStr=man.toISOString().split('T')[0];
+  var hh=now.getHours().toString().padStart(2,'0');
+  var mm=now.getMinutes().toString().padStart(2,'0');
+  var horaNow=hh+':'+mm;
+  var IC={Incendio:'🔥',Sismo:'📡',Derrame:'💧','Cód. Rojo':'🚑','F. Eléctrica':'⚡',Amenaza:'🛡️'};
+  Object.values(simsCache).forEach(function(s){
+    var k=String(s.ts||s.fecha+s.hora);
     if(s.fecha===manStr&&horaNow==='07:00'&&!notifEnviadas.has(k+'_1d')){
       notifEnviadas.add(k+'_1d');
       mostrarBanner((IC[s.tipo]||'🛡️')+' Mañana: Simulacro de '+s.tipo,'Mañana a las '+s.hora+' hrs · '+s.zona,IC[s.tipo]||'🛡️');
@@ -867,8 +795,8 @@ function checkSchedule(){
       sonarFuerte('sim'); vibrar();
     }
     if(s.fecha===hoy){
-      const [sh,sm]=s.hora.split(':').map(Number);
-      const simMin=sh*60+sm, nowMin=now.getHours()*60+now.getMinutes();
+      var sh=parseInt(s.hora.split(':')[0]), sm=parseInt(s.hora.split(':')[1]);
+      var simMin=sh*60+sm, nowMin=now.getHours()*60+now.getMinutes();
       if(nowMin===simMin-30&&!notifEnviadas.has(k+'_30m')){
         notifEnviadas.add(k+'_30m');
         mostrarBanner((IC[s.tipo]||'🛡️')+' Simulacro en 30 min',s.tipo+' a las '+s.hora+' · '+s.zona,IC[s.tipo]||'🛡️');
@@ -876,67 +804,70 @@ function checkSchedule(){
       }
       if(horaNow===s.hora&&!notifEnviadas.has(k+'_inicio')){
         notifEnviadas.add(k+'_inicio');
-        const hora=now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
-        const data={subtipo:s.tipo,modo:'sim',zona:s.zona,reportadoPor:'Sistema automático',area:'Agenda',hora,canal:miCanal,ts:Date.now()};
-        push(alertasRef,data);
+        var hora=now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+        var data={subtipo:s.tipo,modo:'sim',zona:s.zona,reportadoPor:'Sistema automático',area:'Agenda',hora:hora,canal:miCanal,ts:Date.now()};
+        alertasRef.push(data);
         mostrarAlerta(data);
       }
     }
   });
 }
 
-// ── NAV ──
-window._goTo=screen=>{
-  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
+// NAV
+function goTo(screen){
+  document.querySelectorAll('.sc').forEach(function(s){ s.classList.remove('active'); });
   document.getElementById('sc-'+screen).classList.add('active');
-  document.querySelectorAll('.bni').forEach(b=>b.classList.remove('active'));
-  const bn=document.getElementById('bn-'+screen);
+  document.querySelectorAll('.bni').forEach(function(b){ b.classList.remove('active'); });
+  var bn=document.getElementById('bn-'+screen);
   if(bn) bn.classList.add('active');
   screenActual=screen;
   if(screen==='chat'){ chatUnread=0; document.getElementById('chatBadge').classList.remove('show'); }
   window.scrollTo(0,0);
-};
+}
 
-// ── SELECTOR ──
-window._abrirSel=tipo=>{ tipoSel=tipo||'Incendio'; document.getElementById('asel').classList.add('show'); };
-window._cerrarSel=()=>document.getElementById('asel').classList.remove('show');
-window._setModo=modo=>{
+// SELECTOR
+function abrirSel(tipo){ tipoSel=tipo||'Incendio'; document.getElementById('asel').classList.add('show'); }
+function cerrarSel(){ document.getElementById('asel').classList.remove('show'); }
+
+function setModo(modo){
   modoActual=modo;
-  const mr=document.getElementById('modoReal'),ms=document.getElementById('modoSim');
-  const av=document.getElementById('avisoBox'),cb=document.getElementById('btnConf');
-  document.querySelectorAll('.tsb').forEach(b=>b.className='tsb');
+  var mr=document.getElementById('modoReal'), ms=document.getElementById('modoSim');
+  var av=document.getElementById('avisoBox'), cb=document.getElementById('btnConf');
+  document.querySelectorAll('.tsb').forEach(function(b){ b.className='tsb'; });
   if(modo==='real'){
-    mr.className='modob real';ms.className='modob';
+    mr.className='modob real'; ms.className='modob';
     av.className='aviso avr'; av.innerHTML='⚡ <strong>Sonido 30 seg + vibración:</strong> alerta en TODOS aunque estén en silencio.';
     cb.className='br'; cb.innerHTML='🚨 ALERTAR AHORA';
     document.querySelectorAll('.tsb')[0].classList.add('sr');
   }else{
-    ms.className='modob sim';mr.className='modob';
+    ms.className='modob sim'; mr.className='modob';
     av.className='aviso avg'; av.innerHTML='✓ Se notificará como <strong>SIMULACRO</strong>.';
     cb.className='bv'; cb.innerHTML='🛡️ INICIAR SIMULACRO';
     document.querySelectorAll('.tsb')[0].classList.add('sg');
   }
-};
-window._selTS=(el,tipo)=>{
-  tipoSel=tipo;
-  document.querySelectorAll('.tsb').forEach(b=>b.className='tsb');
-  el.classList.add(modoActual==='real'?'sr':'sg');
-};
-window._confirmarAlerta=()=>{
-  cerrarSel();
-  const hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
-  const data={subtipo:tipoSel,modo:modoActual,zona:miArea,reportadoPor:miNombre,area:miArea,hora,canal:miCanal,ts:Date.now()};
-  push(alertasRef,data);
-  mostrarAlerta(data);
-};
+}
 
-// ── MOSTRAR ALERTA CON COUNTDOWN 30 SEG ──
-window._mostrarAlerta=msg=>{
-  pedirWakeLock(); // Mantener pantalla encendida
-  const esReal=msg.modo==='real';
-  const ov=document.getElementById('aov');
+function selTS(el,tipo){
+  tipoSel=tipo;
+  document.querySelectorAll('.tsb').forEach(function(b){ b.className='tsb'; });
+  el.classList.add(modoActual==='real'?'sr':'sg');
+}
+
+function confirmarAlerta(){
+  cerrarSel();
+  var hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  var data={subtipo:tipoSel,modo:modoActual,zona:miArea,reportadoPor:miNombre,area:miArea,hora:hora,canal:miCanal,ts:Date.now()};
+  alertasRef.push(data);
+  mostrarAlerta(data);
+}
+
+// ALERTA
+function mostrarAlerta(msg){
+  pedirWakeLock();
+  var esReal=msg.modo==='real';
+  var ov=document.getElementById('aov');
   ov.className=(esReal?'ovr':'ovg')+' show';
-  const IC={Incendio:'🔥',Sismo:'📡',Derrame:'💧','Código Rojo':'🚑','Cód. Rojo':'🚑','F. Eléctrica':'⚡',Amenaza:'🛡️'};
+  var IC={Incendio:'🔥',Sismo:'📡',Derrame:'💧','Código Rojo':'🚑','Cód. Rojo':'🚑','F. Eléctrica':'⚡',Amenaza:'🛡️'};
   document.getElementById('ovCirc').textContent=IC[msg.subtipo]||'🚨';
   document.getElementById('ovModo').textContent=esReal?'⚠ EMERGENCIA REAL':'🟢 SIMULACRO';
   document.getElementById('ovTipo').textContent=(msg.subtipo||'ALERTA').toUpperCase();
@@ -944,177 +875,166 @@ window._mostrarAlerta=msg=>{
   document.getElementById('ovZona').textContent=msg.zona||'-';
   document.getElementById('ovReport').textContent=(msg.reportadoPor||'-')+' · '+(msg.area||'-');
   document.getElementById('ovHora').textContent=msg.hora||'-';
-  document.getElementById('ovCanal').textContent='Canal '+(msg.canal||miCanal);
+  document.getElementById('ovCanal').textContent='UMAA AGS';
   agregarMsgSis((esReal?'🚨 EMERGENCIA REAL':'🟢 SIMULACRO')+': '+msg.subtipo+' en '+msg.zona+' · '+msg.reportadoPor+' · '+msg.hora, esReal);
-
-  // Iniciar countdown de 30 segundos + sonido
   iniciarCountdown(30, esReal);
-};
+}
 
 function iniciarCountdown(segundos, esReal){
   pararSonido();
   if(countdownTimer) clearInterval(countdownTimer);
   sonarFuerte(esReal?'real':'sim');
   vibrar();
-
-  let restantes = segundos;
-  const circunferencia = 188.5; // 2*PI*30
-  const bar = document.getElementById('cdBar');
-  const num = document.getElementById('cdNum');
-
-  const actualizar = () => {
-    num.textContent = restantes;
-    const offset = circunferencia * (1 - restantes/segundos);
-    bar.style.strokeDashoffset = offset;
-    if(restantes <= 0){
-      clearInterval(countdownTimer);
-      countdownTimer = null;
-      // Después de 30 seg sin respuesta, vibrar de nuevo
+  var restantes=segundos;
+  var circ=188.5;
+  var bar=document.getElementById('cdBar');
+  var num=document.getElementById('cdNum');
+  var tick=function(){
+    if(num) num.textContent=restantes;
+    if(bar) bar.style.strokeDashoffset=circ*(1-restantes/segundos);
+    if(restantes<=0){
+      clearInterval(countdownTimer); countdownTimer=null;
       vibrar();
-      // Reiniciar countdown si sigue sin responder
       iniciarCountdown(30, esReal);
     }
     restantes--;
   };
-
-  actualizar();
-  countdownTimer = setInterval(actualizar, 1000);
+  tick();
+  countdownTimer=setInterval(tick,1000);
 }
 
-window._responder=estado=>{
-  pararSonido();
-  liberarWakeLock();
+function responder(estado){
+  pararSonido(); liberarWakeLock();
   if(countdownTimer){ clearInterval(countdownTimer); countdownTimer=null; }
   document.getElementById('aov').className='';
-  const hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
-  const em=estado==='salvo'?'✅ A SALVO':estado==='evacuando'?'🏃 EVACUANDO':'⚠️ NECESITA AYUDA';
+  var hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  var em=estado==='salvo'?'✅ A SALVO':estado==='evacuando'?'🏃 EVACUANDO':'⚠️ NECESITA AYUDA';
   if(estado==='salvo') stats.salvo++;
-  else if(estado==='evacuando') stats.evac=(stats.evac||0)+1;
+  else if(estado==='evacuando') stats.evac++;
   else if(estado==='ayuda') stats.ayuda++;
   document.getElementById('statSalvo').textContent=stats.salvo;
-  if(document.getElementById('statEvac')) document.getElementById('statEvac').textContent=stats.evac||0;
+  if(document.getElementById('statEvac')) document.getElementById('statEvac').textContent=stats.evac;
   document.getElementById('statAyuda').textContent=stats.ayuda;
   agregarMsgSis(miNombre+' ('+miArea+'): '+em+' · '+hora, false);
-  mostrarBanner('Respuesta registrada ✓',em,'✅');
-};
+  mostrarBanner('Respuesta registrada ✓', em, '✅');
+}
 
-// ── SONIDO FUERTE ──
+// SONIDO
 function sonarFuerte(modo){
   pararSonido();
-  const esReal=modo==='real';
-  let n=0;
-  const ciclo=()=>{
+  var esReal=modo==='real';
+  var n=0;
+  var ciclo=function(){
     try{
-      const ctx=new(window.AudioContext||window.webkitAudioContext)();
-      [[esReal?960:660,'sawtooth',1.0],[esReal?480:330,'square',0.6]].forEach(([f,t,v])=>{
-        const o=ctx.createOscillator(),g=ctx.createGain();
+      var ctx=new(window.AudioContext||window.webkitAudioContext)();
+      [[esReal?960:660,'sawtooth',1.0],[esReal?480:330,'square',0.6]].forEach(function(cfg){
+        var o=ctx.createOscillator(), g=ctx.createGain();
         o.connect(g); g.connect(ctx.destination);
-        o.type=t; o.frequency.value=f;
-        g.gain.setValueAtTime(v,ctx.currentTime);
+        o.type=cfg[1]; o.frequency.value=cfg[0];
+        g.gain.setValueAtTime(cfg[2],ctx.currentTime);
         g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.45);
         o.start(ctx.currentTime); o.stop(ctx.currentTime+0.45);
       });
     }catch(e){}
-    // Suena continuamente hasta que el countdown pare o el usuario responda
     sonarTimer=setTimeout(ciclo,600);
   };
   ciclo();
 }
-function pararSonido(){ if(sonarTimer){clearTimeout(sonarTimer);sonarTimer=null;} }
+function pararSonido(){ if(sonarTimer){ clearTimeout(sonarTimer); sonarTimer=null; } }
 function vibrar(){ try{ if(navigator.vibrate) navigator.vibrate([500,150,500,150,500,150,800]); }catch(e){} }
 
-// ── CHAT ──
-window._enviarMsg=()=>{
-  const inp=document.getElementById('chatInput');
-  const txt=(inp.value||'').trim();
+// CHAT
+function enviarMsg(){
+  var inp=document.getElementById('chatInput');
+  var txt=(inp.value||'').trim();
   if(!txt||!chatFBRef) return;
-  const hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
-  push(chatFBRef,{nombre:miNombre,area:miArea,rol:miRol,texto:txt,hora,ts:Date.now()});
+  var hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  chatFBRef.push({nombre:miNombre,area:miArea,rol:miRol,texto:txt,hora:hora,ts:Date.now()});
   agregarMsgChat('Tú',miArea,txt,hora,true);
   inp.value='';
-};
+}
+
 function agregarMsgChat(nombre,area,texto,hora,mio){
-  const msgs=document.getElementById('chatMsgs');
-  const d=document.createElement('div');
+  var msgs=document.getElementById('chatMsgs');
+  var d=document.createElement('div');
   if(mio){
     d.className='mout';
-    d.innerHTML=`<div class="mt">${eh(texto)}</div><div class="mm">${hora} ✓✓</div>`;
+    d.innerHTML='<div class="mt">'+eh(texto)+'</div><div class="mm">'+hora+' ✓✓</div>';
   }else{
     d.className='min2';
-    d.innerHTML=`<div class="mn">${eh(nombre)} · ${eh(area)}</div><div class="mt">${eh(texto)}</div><div class="mm">${hora}</div>`;
+    d.innerHTML='<div class="mn">'+eh(nombre)+' · '+eh(area)+'</div><div class="mt">'+eh(texto)+'</div><div class="mm">'+hora+'</div>';
   }
   msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
 }
+
 function agregarMsgSis(txt,esRojo){
-  const msgs=document.getElementById('chatMsgs');
-  const d=document.createElement('div');
+  var msgs=document.getElementById('chatMsgs');
+  var d=document.createElement('div');
   d.className='msys'+(esRojo?'':' g');
   d.textContent=txt;
   msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
 }
-const eh=t=>(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-// ── BANNER ──
+function eh(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// BANNER
 function mostrarBanner(titulo,cuerpo,icono){
   document.getElementById('bannerTitle').textContent=titulo;
   document.getElementById('bannerBody').textContent=cuerpo;
   document.getElementById('bannerIcon').textContent=icono||'🔔';
   document.getElementById('banner').classList.add('show');
-  setTimeout(()=>document.getElementById('banner').classList.remove('show'),7000);
+  setTimeout(function(){ document.getElementById('banner').classList.remove('show'); },7000);
 }
-window._cerrarBanner=()=>document.getElementById('banner').classList.remove('show');
+function cerrarBanner(){ document.getElementById('banner').classList.remove('show'); }
 
-// ── SIMULACROS ──
-window._selTF=(el,tipo)=>{
+// SIMULACROS
+function selTF(el,tipo){
   tipoForm=tipo;
-  document.querySelectorAll('#tfGrid .tfb').forEach(b=>b.classList.remove('sel'));
+  document.querySelectorAll('#tfGrid .tfb').forEach(function(b){ b.classList.remove('sel'); });
   el.classList.add('sel');
-};
-window._guardarSim=()=>{
-  const fecha=document.getElementById('fFecha').value;
-  const hora=document.getElementById('fHora').value;
-  const desc=document.getElementById('fDesc').value;
-  const zona=document.getElementById('fZona').value||'General';
-  const dur=document.getElementById('fDur').value||'15';
-  if(!fecha){alert('Selecciona una fecha.');return;}
-  push(simsRef,{tipo:tipoForm,desc,fecha,hora,zona,duracion:dur,creadoPor:miNombre,canal:miCanal,ts:Date.now()});
-  mostrarBanner('Simulacro agendado 📅','Sonará automáticamente a la hora exacta en todos los celulares.','🛡️');
+}
+
+function guardarSim(){
+  var fecha=document.getElementById('fFecha').value;
+  var hora=document.getElementById('fHora').value;
+  var desc=document.getElementById('fDesc').value;
+  var zona=document.getElementById('fZona').value||'General';
+  var dur=document.getElementById('fDur').value||'15';
+  if(!fecha){ alert('Selecciona una fecha.'); return; }
+  simsRef.push({tipo:tipoForm,desc:desc,fecha:fecha,hora:hora,zona:zona,duracion:dur,creadoPor:miNombre,canal:miCanal,ts:Date.now()});
+  mostrarBanner('Simulacro agendado 📅','Sonará automáticamente a la hora exacta.','🛡️');
   goTo('simulacros');
-};
+}
 
 function renderSims(data){
-  const lista=document.getElementById('listaSims');
-  const sims=Object.values(data).sort((a,b)=>a.fecha>b.fecha?1:-1);
+  var lista=document.getElementById('listaSims');
+  var sims=Object.values(data).sort(function(a,b){ return a.fecha>b.fecha?1:-1; });
   if(!sims.length){
     lista.innerHTML='<div style="color:var(--t3);font-size:13px;text-align:center;padding:30px;background:#fff;border-radius:18px;border:1px solid var(--bd)">📅 Aún no hay simulacros.<br>Toca "+ Agendar" para crear uno.</div>';
     return;
   }
-  const hoy=new Date().toISOString().split('T')[0];
-  const man=new Date(); man.setDate(man.getDate()+1);
-  const manStr=man.toISOString().split('T')[0];
-  const IC={Incendio:'🔥',Sismo:'📡',Derrame:'💧','Cód. Rojo':'🚑','F. Eléctrica':'⚡',Amenaza:'🛡️'};
-  const CL={Incendio:'#fff0f0',Sismo:'#fffff0',Derrame:'#f0f8ff','Cód. Rojo':'#fff0f4','F. Eléctrica':'#fffcf0',Amenaza:'#f8f0ff'};
-  lista.innerHTML=sims.map(s=>{
-    const past=s.fecha<hoy,isHoy=s.fecha===hoy,isMan=s.fecha===manStr;
-    const fo=new Date(s.fecha+'T12:00:00');
-    const fs=fo.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long'});
-    const dias=Math.round((fo-new Date())/86400000);
-    const badge=past?'<span class="simbadge bdone">REALIZADO</span>':
+  var hoy=new Date().toISOString().split('T')[0];
+  var man=new Date(); man.setDate(man.getDate()+1); var manStr=man.toISOString().split('T')[0];
+  var IC={Incendio:'🔥',Sismo:'📡',Derrame:'💧','Cód. Rojo':'🚑','F. Eléctrica':'⚡',Amenaza:'🛡️'};
+  var CL={Incendio:'#fff0f0',Sismo:'#fffff0',Derrame:'#f0f8ff','Cód. Rojo':'#fff0f4','F. Eléctrica':'#fffcf0',Amenaza:'#f8f0ff'};
+  lista.innerHTML=sims.map(function(s){
+    var past=s.fecha<hoy, isHoy=s.fecha===hoy, isMan=s.fecha===manStr;
+    var fo=new Date(s.fecha+'T12:00:00');
+    var fs=fo.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long'});
+    var dias=Math.round((fo-new Date())/86400000);
+    var badge=past?'<span class="simbadge bdone">REALIZADO</span>':
       isHoy?'<span class="simbadge bhoy">HOY</span>':
       isMan?'<span class="simbadge bprox">MAÑANA</span>':
-      `<span class="simbadge bprox">${dias} días</span>`;
-    const cls='simcard'+(isHoy?' hoy':(!past&&(isMan||dias<=7))?' prox':'');
-    const notif=!past?'<div class="notifrow"><span>🔊 Hora exacta: alerta automática + sonido 30 seg a todos del canal</span></div>':'';
-    return `<div class="${cls}">
-      <div class="simtop">
-        <div class="simic" style="background:${CL[s.tipo]||'#f5f5f5'}">${IC[s.tipo]||'🛡️'}</div>
-        <div style="flex:1"><div class="simtitle">Simulacro de ${eh(s.tipo)}</div>
-        <div class="simfecha">${fs} · ${s.hora} hrs</div>
-        ${s.desc?`<div style="font-size:11px;color:var(--t3);margin-top:3px">${eh(s.desc)}</div>`:''}</div>
-        ${badge}</div>
-      <div class="simmeta"><span>📍 ${eh(s.zona)}</span><span>⏱ ${s.duracion} min</span><span>👤 ${eh(s.creadoPor)}</span></div>
-      ${notif}
-    </div>`;
+      '<span class="simbadge bprox">'+dias+' días</span>';
+    var cls='simcard'+(isHoy?' hoy':(!past&&(isMan||dias<=7))?' prox':'');
+    var notif=!past?'<div class="notifrow"><span>🔊 Hora exacta: alerta automática a todos</span></div>':'';
+    return '<div class="'+cls+'"><div class="simtop"><div class="simic" style="background:'+(CL[s.tipo]||'#f5f5f5')+'">'+(IC[s.tipo]||'🛡️')+'</div>'+
+      '<div style="flex:1"><div class="simtitle">Simulacro de '+eh(s.tipo)+'</div>'+
+      '<div class="simfecha">'+fs+' · '+s.hora+' hrs</div>'+
+      (s.desc?'<div style="font-size:11px;color:var(--t3);margin-top:3px">'+eh(s.desc)+'</div>':'')+
+      '</div>'+badge+'</div>'+
+      '<div class="simmeta"><span>📍 '+eh(s.zona)+'</span><span>⏱ '+s.duracion+' min</span><span>👤 '+eh(s.creadoPor)+'</span></div>'+
+      notif+'</div>';
   }).join('');
 }
 </script>
