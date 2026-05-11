@@ -804,18 +804,109 @@ function renderSims(data){
   }).join('');
 }
 
-function verificarNotifSims(data){
-  const man=new Date(); man.setDate(man.getDate()+1);
-  const manStr=man.toISOString().split('T')[0];
-  Object.values(data).forEach(s=>{
-    if(s.fecha===manStr){
-      setTimeout(()=>{
-        mostrarBanner('🛡️ Mañana hay simulacro — '+s.tipo,
-          s.fecha+' · '+s.hora+' hrs · '+s.zona,'🛡️');
-      },2500);
+// ── SCHEDULER — verifica cada minuto si hay que disparar algo ──
+let simsCache = {};
+let notifEnviadas = new Set(); // evita repetir la misma notif
+
+onValue(simsRef, snap => {
+  simsCache = snap.val() || {};
+  renderSims(simsCache);
+  checkSchedule(); // revisar inmediatamente al cargar
+});
+
+function checkSchedule(){
+  const ahora    = new Date();
+  const hoy      = ahora.toISOString().split('T')[0];
+  const manObj   = new Date(ahora); manObj.setDate(manObj.getDate()+1);
+  const manana   = manObj.toISOString().split('T')[0];
+  const horaNow  = ahora.getHours().toString().padStart(2,'0') + ':' + ahora.getMinutes().toString().padStart(2,'0');
+  const hora7am  = '07:00';
+  const IC = {Incendio:'🔥',Sismo:'📡',Derrame:'💧','Cód. Rojo':'🚑','F. Eléctrica':'⚡',Amenaza:'🛡️'};
+
+  Object.values(simsCache).forEach(s => {
+    const keyBase = s.ts || s.fecha+s.hora;
+
+    // 1️⃣ UN DÍA ANTES — 7 am
+    if(s.fecha === manana && horaNow === hora7am){
+      const key = keyBase+'_1dia';
+      if(!notifEnviadas.has(key)){
+        notifEnviadas.add(key);
+        mostrarBanner(
+          (IC[s.tipo]||'🛡️')+' Mañana: Simulacro de '+s.tipo,
+          'Mañana '+s.fecha+' a las '+s.hora+' hrs · '+s.zona,
+          IC[s.tipo]||'🛡️'
+        );
+        sonarFuerte('sim');
+        vibrar();
+      }
+    }
+
+    // 2️⃣ DÍA DEL SIMULACRO — 7 am (aviso de mañana es hoy)
+    if(s.fecha === hoy && horaNow === hora7am){
+      const key = keyBase+'_hoy7am';
+      if(!notifEnviadas.has(key)){
+        notifEnviadas.add(key);
+        mostrarBanner(
+          (IC[s.tipo]||'🛡️')+' HOY: Simulacro de '+s.tipo,
+          'Hoy a las '+s.hora+' hrs · '+s.zona+' — Prepárate',
+          IC[s.tipo]||'🛡️'
+        );
+        sonarFuerte('sim');
+        vibrar();
+      }
+    }
+
+    // 3️⃣ 30 MINUTOS ANTES
+    if(s.fecha === hoy){
+      const [h,m] = s.hora.split(':').map(Number);
+      const simMin = h*60+m;
+      const ahoraMin = ahora.getHours()*60+ahora.getMinutes();
+      if(ahoraMin === simMin-30){
+        const key = keyBase+'_30min';
+        if(!notifEnviadas.has(key)){
+          notifEnviadas.add(key);
+          mostrarBanner(
+            (IC[s.tipo]||'🛡️')+' Simulacro en 30 minutos',
+            s.tipo+' a las '+s.hora+' hrs · '+s.zona,
+            IC[s.tipo]||'🛡️'
+          );
+          sonarFuerte('sim');
+          vibrar();
+        }
+      }
+
+      // 4️⃣ HORA EXACTA DEL SIMULACRO — dispara la alerta completa
+      if(horaNow === s.hora){
+        const key = keyBase+'_inicio';
+        if(!notifEnviadas.has(key)){
+          notifEnviadas.add(key);
+          // Publicar en Firebase para que TODOS los celulares del canal suenen
+          const hora = ahora.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+          const alertaData = {
+            subtipo: s.tipo,
+            modo: 'sim',
+            zona: s.zona,
+            reportadoPor: 'Sistema automático',
+            area: 'Agenda',
+            hora: hora,
+            canal: miCanal,
+            ts: Date.now(),
+            desc: s.desc||''
+          };
+          // Guardar en Firebase → suena en TODOS
+          push(alertasRef, alertaData);
+          // Mostrar local también
+          mostrarAlerta(alertaData);
+        }
+      }
     }
   });
 }
+
+// Ejecutar cada 30 segundos para no perder el minuto exacto
+setInterval(checkSchedule, 30000);
+
+function verificarNotifSims(data){ /* vacío — lo maneja checkSchedule */ }
 </script>
 </body>
 </html>
