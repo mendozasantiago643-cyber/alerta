@@ -331,7 +331,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
     </div>
     <input type="hidden" id="loginRol" value="colaborador">
 
-    <button class="bentrar" id="btnEntrar">▶ INGRESAR A ALERTA</button>
+    <button class="bentrar" id="btnEntrar" onclick="doLogin()" ontouchend="event.preventDefault();doLogin()">▶ INGRESAR A ALERTA</button>
     <div class="cst cst-ok" id="connSt">✅ Listo</div>
   </div>
 </div>
@@ -656,12 +656,11 @@ window.addEventListener('load', async ()=>{
     };
   }
 
-  const btn=document.getElementById('btnEntrar');
-  btn.addEventListener('click', doLogin);
-  btn.addEventListener('touchend', e=>{ e.preventDefault(); doLogin(); });
   const sos=document.getElementById('sosBtn');
   sos.addEventListener('click', ()=>abrirSel('Incendio'));
   sos.addEventListener('touchend', e=>{ e.preventDefault(); abrirSel('Incendio'); });
+  // Make doLogin global explicitly
+  window.doLogin = window.doLogin || doLogin;
   document.getElementById('btnPermisos').addEventListener('click', activarPermisos);
   document.getElementById('btnPermisos').addEventListener('touchend', e=>{ e.preventDefault(); activarPermisos(); });
 });
@@ -729,9 +728,17 @@ window.doLogin=async ()=>{
   document.getElementById('chatN').textContent='UMAA AGS';
 
   const lp=document.getElementById('lp');
-  lp.style.cssText='display:none!important;visibility:hidden;opacity:0;position:fixed;z-index:-999;pointer-events:none;';
-  document.getElementById('app').style.display='block';
-  document.getElementById('botNav').style.display='grid';
+  lp.style.display='none';
+  lp.style.visibility='hidden';
+  lp.style.opacity='0';
+  lp.style.zIndex='-999';
+  lp.style.pointerEvents='none';
+  lp.setAttribute('hidden','');
+  const appEl=document.getElementById('app');
+  appEl.style.display='block';
+  appEl.removeAttribute('hidden');
+  const navEl=document.getElementById('botNav');
+  navEl.style.display='grid';
 
   // FCM en segundo plano — no bloquea el login
   iniciarFCM(canal,nombre,area,rol).catch(e=>console.warn('FCM:',e));
