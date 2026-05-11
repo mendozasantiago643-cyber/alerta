@@ -574,6 +574,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
   </div>
 </div>
 
+<script>
+// Bridge — expone funciones del módulo al scope global
+// Necesario para que onclick="" funcione con type="module"
+function doLogin(){ if(window._doLogin) window._doLogin(); else setTimeout(doLogin,100); }
+function selRol(el,rol){ if(window._selRol) window._selRol(el,rol); }
+function abrirSel(t){ if(window._abrirSel) window._abrirSel(t); }
+function setModo(m){ if(window._setModo) window._setModo(m); }
+function selTS(el,t){ if(window._selTS) window._selTS(el,t); }
+function confirmarAlerta(){ if(window._confirmarAlerta) window._confirmarAlerta(); }
+function cerrarSel(){ if(window._cerrarSel) window._cerrarSel(); }
+function responder(e){ if(window._responder) window._responder(e); }
+function ignorar(){ if(window._ignorar) window._ignorar(); }
+function enviarMsg(){ if(window._enviarMsg) window._enviarMsg(); }
+function goTo(s){ if(window._goTo) window._goTo(s); }
+function selTF(el,t){ if(window._selTF) window._selTF(el,t); }
+function guardarSim(){ if(window._guardarSim) window._guardarSim(); }
+function cerrarBanner(){ if(window._cerrarBanner) window._cerrarBanner(); }
+function cerrarPermisos(){ if(window._cerrarPermisos) window._cerrarPermisos(); }
+function generarCanal(){ if(window._generarCanal) window._generarCanal(); }
+</script>
+
 <script type="module">
 import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getMessaging, getToken, onMessage }
@@ -694,7 +715,7 @@ async function activarPermisos(){
   setTimeout(()=>{ cerrarPermisos(); }, 1200);
 }
 
-window.cerrarPermisos=()=>{
+window._cerrarPermisos=()=>{
   document.getElementById('permisosModal').classList.remove('show');
   localStorage.setItem('alerta-permisos','1');
 };
@@ -703,13 +724,13 @@ window.cerrarPermisos=()=>{
 // Canal fijo institucional — todos conectados al mismo canal
 const CANAL_UMAA = 'UMAA-AGS-2026';
 
-window.selRol=(el,rol)=>{
+window._selRol=(el,rol)=>{
   document.querySelectorAll('.rol-opt').forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
   document.getElementById('loginRol').value=rol;
 };
 
-window.doLogin=async ()=>{
+window._doLogin=async ()=>{
   let nombre=(document.getElementById('loginNombre').value||'').toString().trim();
   let area=(document.getElementById('loginArea').value||'').toString().trim();
   let rol=(document.getElementById('loginRol').value||'colaborador');
@@ -865,7 +886,7 @@ function checkSchedule(){
 }
 
 // ── NAV ──
-window.goTo=screen=>{
+window._goTo=screen=>{
   document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
   document.getElementById('sc-'+screen).classList.add('active');
   document.querySelectorAll('.bni').forEach(b=>b.classList.remove('active'));
@@ -877,9 +898,9 @@ window.goTo=screen=>{
 };
 
 // ── SELECTOR ──
-window.abrirSel=tipo=>{ tipoSel=tipo||'Incendio'; document.getElementById('asel').classList.add('show'); };
-window.cerrarSel=()=>document.getElementById('asel').classList.remove('show');
-window.setModo=modo=>{
+window._abrirSel=tipo=>{ tipoSel=tipo||'Incendio'; document.getElementById('asel').classList.add('show'); };
+window._cerrarSel=()=>document.getElementById('asel').classList.remove('show');
+window._setModo=modo=>{
   modoActual=modo;
   const mr=document.getElementById('modoReal'),ms=document.getElementById('modoSim');
   const av=document.getElementById('avisoBox'),cb=document.getElementById('btnConf');
@@ -896,12 +917,12 @@ window.setModo=modo=>{
     document.querySelectorAll('.tsb')[0].classList.add('sg');
   }
 };
-window.selTS=(el,tipo)=>{
+window._selTS=(el,tipo)=>{
   tipoSel=tipo;
   document.querySelectorAll('.tsb').forEach(b=>b.className='tsb');
   el.classList.add(modoActual==='real'?'sr':'sg');
 };
-window.confirmarAlerta=()=>{
+window._confirmarAlerta=()=>{
   cerrarSel();
   const hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
   const data={subtipo:tipoSel,modo:modoActual,zona:miArea,reportadoPor:miNombre,area:miArea,hora,canal:miCanal,ts:Date.now()};
@@ -910,7 +931,7 @@ window.confirmarAlerta=()=>{
 };
 
 // ── MOSTRAR ALERTA CON COUNTDOWN 30 SEG ──
-window.mostrarAlerta=msg=>{
+window._mostrarAlerta=msg=>{
   pedirWakeLock(); // Mantener pantalla encendida
   const esReal=msg.modo==='real';
   const ov=document.getElementById('aov');
@@ -960,7 +981,7 @@ function iniciarCountdown(segundos, esReal){
   countdownTimer = setInterval(actualizar, 1000);
 }
 
-window.responder=estado=>{
+window._responder=estado=>{
   pararSonido();
   liberarWakeLock();
   if(countdownTimer){ clearInterval(countdownTimer); countdownTimer=null; }
@@ -1003,7 +1024,7 @@ function pararSonido(){ if(sonarTimer){clearTimeout(sonarTimer);sonarTimer=null;
 function vibrar(){ try{ if(navigator.vibrate) navigator.vibrate([500,150,500,150,500,150,800]); }catch(e){} }
 
 // ── CHAT ──
-window.enviarMsg=()=>{
+window._enviarMsg=()=>{
   const inp=document.getElementById('chatInput');
   const txt=(inp.value||'').trim();
   if(!txt||!chatFBRef) return;
@@ -1041,15 +1062,15 @@ function mostrarBanner(titulo,cuerpo,icono){
   document.getElementById('banner').classList.add('show');
   setTimeout(()=>document.getElementById('banner').classList.remove('show'),7000);
 }
-window.cerrarBanner=()=>document.getElementById('banner').classList.remove('show');
+window._cerrarBanner=()=>document.getElementById('banner').classList.remove('show');
 
 // ── SIMULACROS ──
-window.selTF=(el,tipo)=>{
+window._selTF=(el,tipo)=>{
   tipoForm=tipo;
   document.querySelectorAll('#tfGrid .tfb').forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
 };
-window.guardarSim=()=>{
+window._guardarSim=()=>{
   const fecha=document.getElementById('fFecha').value;
   const hora=document.getElementById('fHora').value;
   const desc=document.getElementById('fDesc').value;
