@@ -781,53 +781,56 @@ function notifNativa(titulo, cuerpo){
   }catch(e){}
 }
 
-// SONIDO FUERTE — dura hasta que el usuario responda
+// SONIDO — bucle: 6 seg ON → 2 seg OFF → 6 seg ON → repeat
 function sonarFuerte(modo){
   pararSonido();
   var esReal = modo==='real';
-  // Patrón de alerta: tono alto + tono bajo alternando, como sirena
-  var fase = 0;
-  var ciclo = function(){
-    try{
-      var ctx = new(window.AudioContext||window.webkitAudioContext)();
-      // Tono principal — oscila entre 2 frecuencias como sirena
-      var freqAlta = esReal ? 1200 : 800;
-      var freqBaja = esReal ? 600  : 400;
-      var freq = (fase % 2 === 0) ? freqAlta : freqBaja;
-      // Oscilador 1 — tono principal fuerte
-      var o1=ctx.createOscillator(), g1=ctx.createGain();
-      o1.connect(g1); g1.connect(ctx.destination);
-      o1.type = 'sawtooth';
-      o1.frequency.value = freq;
-      g1.gain.setValueAtTime(1.0, ctx.currentTime);
-      g1.gain.setValueAtTime(1.0, ctx.currentTime+0.18);
-      g1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.22);
-      o1.start(ctx.currentTime);
-      o1.stop(ctx.currentTime+0.22);
-      // Oscilador 2 — armónico para más volumen
-      var o2=ctx.createOscillator(), g2=ctx.createGain();
-      o2.connect(g2); g2.connect(ctx.destination);
-      o2.type = 'square';
-      o2.frequency.value = freq / 2;
-      g2.gain.setValueAtTime(0.7, ctx.currentTime);
-      g2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.22);
-      o2.start(ctx.currentTime);
-      o2.stop(ctx.currentTime+0.22);
-      // Oscilador 3 — sub-grave para vibración adicional
-      var o3=ctx.createOscillator(), g3=ctx.createGain();
-      o3.connect(g3); g3.connect(ctx.destination);
-      o3.type = 'sine';
-      o3.frequency.value = 80;
-      g3.gain.setValueAtTime(0.5, ctx.currentTime);
-      g3.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.22);
-      o3.start(ctx.currentTime);
-      o3.stop(ctx.currentTime+0.22);
-    }catch(e){}
-    fase++;
-    // Intervalo corto = sirena rápida e insistente
-    sonarTimer = setTimeout(ciclo, esReal ? 250 : 400);
-  };
-  ciclo();
+
+  function iniciarRafaga(){
+    // Sonar por 6 segundos (24 pulsos x 250ms)
+    var fase=0, pulsos=0, maxPulsos = esReal ? 24 : 15;
+    function pulso(){
+      if(pulsos >= maxPulsos){
+        // Terminó la ráfaga — pausa 2 segundos y vuelve
+        sonarTimer = setTimeout(function(){
+          if(sonarTimer !== null) iniciarRafaga();
+        }, 2000);
+        return;
+      }
+      try{
+        var ctx = new(window.AudioContext||window.webkitAudioContext)();
+        var freqAlta = esReal ? 1200 : 800;
+        var freqBaja = esReal ? 600  : 400;
+        var freq = (fase % 2 === 0) ? freqAlta : freqBaja;
+        // Oscilador 1 — tono principal
+        var o1=ctx.createOscillator(), g1=ctx.createGain();
+        o1.connect(g1); g1.connect(ctx.destination);
+        o1.type='sawtooth'; o1.frequency.value=freq;
+        g1.gain.setValueAtTime(1.0, ctx.currentTime);
+        g1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.22);
+        o1.start(ctx.currentTime); o1.stop(ctx.currentTime+0.22);
+        // Oscilador 2 — armónico
+        var o2=ctx.createOscillator(), g2=ctx.createGain();
+        o2.connect(g2); g2.connect(ctx.destination);
+        o2.type='square'; o2.frequency.value=freq/2;
+        g2.gain.setValueAtTime(0.7, ctx.currentTime);
+        g2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.22);
+        o2.start(ctx.currentTime); o2.stop(ctx.currentTime+0.22);
+        // Oscilador 3 — sub-grave
+        var o3=ctx.createOscillator(), g3=ctx.createGain();
+        o3.connect(g3); g3.connect(ctx.destination);
+        o3.type='sine'; o3.frequency.value=80;
+        g3.gain.setValueAtTime(0.5, ctx.currentTime);
+        g3.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.22);
+        o3.start(ctx.currentTime); o3.stop(ctx.currentTime+0.22);
+      }catch(e){}
+      fase++; pulsos++;
+      sonarTimer = setTimeout(pulso, esReal ? 250 : 400);
+    }
+    pulso();
+  }
+
+  iniciarRafaga();
 }
 
 function pararSonido(){
