@@ -21,26 +21,6 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--g);color:var(--t);min-height:100vh}
-
-/* PERMISOS MODAL */
-#permisosModal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:none;align-items:center;justify-content:center;padding:20px}
-#permisosModal.show{display:flex}
-.pm-box{background:#fff;border-radius:24px;padding:28px;width:100%;max-width:360px;text-align:center}
-.pm-icon{font-size:52px;margin-bottom:12px}
-.pm-title{font-size:18px;font-weight:900;color:var(--t);margin-bottom:8px}
-.pm-sub{font-size:13px;color:var(--t3);margin-bottom:20px;line-height:1.6}
-.pm-item{display:flex;align-items:center;gap:12px;background:var(--g);border-radius:12px;padding:12px;margin-bottom:10px;text-align:left}
-.pm-item-icon{font-size:22px;flex-shrink:0}
-.pm-item-title{font-size:13px;font-weight:700;color:var(--t)}
-.pm-item-sub{font-size:11px;color:var(--t3);margin-top:2px}
-.pm-status{margin-left:auto;font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;flex-shrink:0}
-.pm-ok{background:var(--vl);color:var(--v)}
-.pm-pend{background:#fffcf0;color:#aa6600}
-.pm-no{background:var(--rl);color:var(--r)}
-.btn-pm{width:100%;background:var(--r);border:none;border-radius:14px;padding:16px;color:#fff;font-size:16px;font-weight:800;cursor:pointer;margin-top:6px}
-.btn-pm-skip{width:100%;background:transparent;border:1.5px solid var(--bd);border-radius:14px;padding:12px;color:var(--t3);font-size:13px;cursor:pointer;margin-top:8px}
-
-/* LOGIN */
 #lp{position:fixed;inset:0;background:linear-gradient(135deg,#fff,#f8f0f0);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
 .lcard{background:#fff;border-radius:24px;padding:32px 28px;width:100%;max-width:380px;box-shadow:var(--shl);text-align:center}
 .llogo{width:76px;height:76px;background:var(--r);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px;box-shadow:0 4px 16px rgba(204,34,34,0.3)}
@@ -59,8 +39,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .cst{font-size:11px;margin-top:10px;padding:6px 12px;border-radius:8px;display:inline-block}
 .cst-ok{background:var(--vl);color:var(--v)}
 .cst-w{background:#fffcf0;color:#aa6600}
-
-/* TOPBAR */
 .tb{background:#fff;border-bottom:1px solid var(--bd);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
 .tb-l{display:flex;align-items:center;gap:10px}
 .t-ic{width:34px;height:34px;background:var(--r);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
@@ -73,7 +51,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .uchip{background:var(--g);border:1px solid var(--bd);border-radius:99px;padding:5px 12px 5px 5px;display:flex;align-items:center;gap:6px}
 .uav{width:26px;height:26px;border-radius:50%;background:var(--r);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff}
 .unm{font-size:11px;color:var(--t2);font-weight:600}
-
 #app{display:none;min-height:100vh;padding-bottom:80px}
 .bn{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--bd);display:none;grid-template-columns:1fr 1fr 1fr 1fr;padding:8px 0 14px;z-index:90;box-shadow:0 -2px 12px rgba(0,0,0,0.06)}
 .bni{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px;position:relative}
@@ -86,8 +63,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .ptitle{font-size:22px;font-weight:900;color:var(--t);margin-bottom:4px}
 .psub{color:var(--t3);font-size:12px;margin-bottom:20px}
 .card{background:#fff;border:1px solid var(--bd);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
-
-/* SOS */
 .soswrap{background:linear-gradient(135deg,#fff5f5,#ffe8e8);border:1.5px solid var(--rm);border-radius:20px;padding:24px 16px;margin-bottom:18px;text-align:center}
 .soslbl{color:#cc6666;font-size:10px;font-weight:700;letter-spacing:3px;margin-bottom:16px}
 .sosbtn{width:170px;height:170px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#e63333,#991111);border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin:0 auto;cursor:pointer;box-shadow:0 0 0 8px rgba(204,34,34,0.12),0 0 0 16px rgba(204,34,34,0.06),0 8px 24px rgba(204,34,34,0.3)}
@@ -96,26 +71,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .sostxt{color:#fff;font-size:13px;font-weight:900;letter-spacing:3px}
 .soshint{color:#cc8888;font-size:11px;margin-top:14px;line-height:1.7}
 .sossnd{color:var(--r);font-size:11px;font-weight:800;margin-top:4px}
-
-/* TIPOS */
 .tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
 .tc{background:#fff;border:1.5px solid var(--bd);border-radius:16px;padding:16px 8px;cursor:pointer;text-align:center;box-shadow:var(--sh)}
 .tc:active{transform:scale(0.95);background:var(--rl);border-color:var(--r)}
 .tc-ic{font-size:30px;display:block;margin-bottom:7px}
 .tc-lb{font-size:11px;color:var(--t2);font-weight:600}
-
-/* STATS */
-.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .scard{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:16px;text-align:center;box-shadow:var(--sh)}
 .snum{font-size:28px;font-weight:900}
 .slbl{font-size:10px;color:var(--t3);font-weight:600;letter-spacing:0.5px;margin-top:3px}
-
-/* USERS LIVE */
 .ulive{display:flex;flex-wrap:wrap;gap:6px}
 .ulchip{background:var(--vl);border:1px solid var(--vm);border-radius:99px;padding:5px 12px;font-size:11px;color:var(--v);font-weight:600;display:flex;align-items:center;gap:5px}
 .uldot{width:5px;height:5px;border-radius:50%;background:var(--v)}
-
-/* CHAT */
 .chatwrap{background:#fff;border:1px solid var(--bd);border-radius:18px;overflow:hidden;box-shadow:var(--sh)}
 .chathdr{background:var(--vl);border-bottom:1px solid var(--vm);padding:12px 16px;display:flex;align-items:center;gap:8px}
 .chathdrt{color:var(--v);font-size:13px;font-weight:800;flex:1}
@@ -133,8 +100,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .chatinp{flex:1;background:#fff;border:1.5px solid var(--bd);border-radius:20px;padding:10px 16px;color:var(--t);font-size:14px;outline:none}
 .chatinp:focus{border-color:var(--v)}
 .chatsend{width:40px;height:40px;border-radius:50%;background:var(--v);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;flex-shrink:0;color:#fff}
-
-/* SIMULACROS */
 .simcard{background:#fff;border:1.5px solid var(--bd);border-radius:18px;padding:18px;margin-bottom:12px;box-shadow:var(--sh)}
 .simcard.hoy{border-color:var(--rm);background:var(--rl)}
 .simcard.prox{border-color:#ffecc8;background:#fffaf0}
@@ -148,8 +113,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .simmeta span{font-size:11px;color:var(--t3)}
 .notifrow{display:flex;align-items:center;gap:6px;margin-top:10px;background:var(--vl);border:1px solid var(--vm);border-radius:10px;padding:7px 12px}
 .notifrow span{font-size:10px;color:var(--v);font-weight:600}
-
-/* FORM */
 .fsec{background:#fff;border:1px solid var(--bd);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
 .flbl{font-size:10px;font-weight:800;color:var(--t3);letter-spacing:1px;display:block;margin-bottom:10px}
 .finp{width:100%;background:var(--g);border:1.5px solid var(--bd);border-radius:12px;padding:12px 14px;color:var(--t);font-size:15px;outline:none;margin-bottom:10px;-webkit-appearance:none}
@@ -167,8 +130,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .trlbl{font-size:13px;color:var(--t2)}
 .ton{background:var(--vl);border:1.5px solid var(--v);border-radius:99px;padding:4px 14px;font-size:11px;color:var(--v);font-weight:700}
 .talways{background:var(--v);border-radius:99px;padding:4px 14px;font-size:11px;color:#fff;font-weight:700}
-
-/* BTNS */
 .br{width:100%;background:var(--r);border:none;border-radius:14px;padding:16px;color:#fff;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(204,34,34,0.25)}
 .br:active{transform:scale(0.97)}
 .bv{width:100%;background:var(--v);border:none;border-radius:14px;padding:16px;color:#fff;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
@@ -176,12 +137,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .bo{width:100%;background:transparent;border:1.5px solid var(--bd);border-radius:14px;padding:14px;color:var(--t3);font-size:14px;cursor:pointer;margin-top:10px}
 .bsmv{background:var(--vl);border:1.5px solid var(--v);border-radius:10px;padding:8px 16px;color:var(--v);font-size:12px;font-weight:700;cursor:pointer}
 .seclbl{font-size:10px;font-weight:800;color:var(--t3);letter-spacing:2px;margin-bottom:10px}
-.rol-opt{background:var(--g);border:1.5px solid var(--bd);border-radius:14px;padding:14px 8px;cursor:pointer;text-align:center;transition:all 0.15s}
-.rol-opt:active{transform:scale(0.96)}
-.rol-opt.sel{border-color:var(--r);background:var(--rl)}
-.rol-opt.sel div:last-child{color:var(--r)!important}
-
-/* SELECTOR */
 #asel{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
 #asel.show{display:flex}
 .asheet{background:#fff;border-radius:28px 28px 0 0;padding:22px 20px 40px;width:100%;max-height:90vh;overflow-y:auto}
@@ -206,8 +161,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .aviso{border-radius:12px;padding:12px 14px;font-size:12px;line-height:1.6;margin-bottom:14px}
 .avr{background:var(--rl);border:1.5px solid var(--rm);color:var(--r)}
 .avg{background:var(--vl);border:1.5px solid var(--vm);color:var(--v)}
-
-/* OVERLAY ALERTA — IMPOSIBLE IGNORAR */
 #aov{display:none;position:fixed;inset:0;z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;overflow-y:auto}
 #aov.show{display:flex}
 .ovr{background:linear-gradient(160deg,#7a0000,#cc2222);animation:fr 0.7s infinite}
@@ -227,23 +180,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .ovbtns{width:100%;max-width:360px;display:flex;flex-direction:column;gap:10px}
 .ovbtn{width:100%;border:none;border-radius:14px;padding:17px;font-size:15px;font-weight:800;cursor:pointer;background:rgba(255,255,255,0.25);color:#fff;border:1.5px solid rgba(255,255,255,0.4)}
 .ovbtn:active{transform:scale(0.97)}
-
-/* CONTADOR de 30 segundos */
-.countdown-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:4px}
-.countdown-ring{position:relative;width:70px;height:70px}
-.countdown-svg{transform:rotate(-90deg)}
-.countdown-track{fill:none;stroke:rgba(255,255,255,0.2);stroke-width:6}
-.countdown-bar{fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
-.countdown-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff}
-.countdown-lbl{font-size:10px;color:rgba(255,255,255,0.7);font-weight:700;letter-spacing:1px}
-
-/* BANNER */
+.cdwrap{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:4px}
+.cdring{position:relative;width:70px;height:70px}
+.cdsvg{transform:rotate(-90deg)}
+.cdtrack{fill:none;stroke:rgba(255,255,255,0.2);stroke-width:6}
+.cdbar{fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.cdnum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff}
+.cdlbl{font-size:10px;color:rgba(255,255,255,0.7);font-weight:700;letter-spacing:1px}
 .banner{position:fixed;top:0;left:0;right:0;background:#fff;border-bottom:3px solid var(--r);padding:14px 16px;z-index:800;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
 .banner.show{display:flex;align-items:flex-start;gap:12px;animation:sd 0.3s ease}
 @keyframes sd{from{transform:translateY(-100%)}to{transform:translateY(0)}}
 .bncls{margin-left:auto;background:var(--g);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px;flex-shrink:0}
-
-/* DIRECTORIO */
 .drow{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--g2);cursor:pointer}
 .drow:last-child{border:none}
 .drow:active{opacity:0.7}
@@ -257,41 +204,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 </head>
 <body>
 
-<!-- MODAL DE PERMISOS — primera vez -->
-<div id="permisosModal">
-  <div class="pm-box">
-    <div class="pm-icon">🔐</div>
-    <div class="pm-title">Permisos necesarios</div>
-    <div class="pm-sub">Para que ALERTA funcione correctamente y puedas recibir alertas aunque el celular esté en reposo, necesitamos estos permisos:</div>
-    <div class="pm-item">
-      <div class="pm-item-icon">🔔</div>
-      <div style="flex:1">
-        <div class="pm-item-title">Notificaciones</div>
-        <div class="pm-item-sub">Recibir alertas aunque la app esté cerrada</div>
-      </div>
-      <div class="pm-status pm-pend" id="st-notif">Pendiente</div>
-    </div>
-    <div class="pm-item">
-      <div class="pm-item-icon">⚡</div>
-      <div style="flex:1">
-        <div class="pm-item-title">Optimización de batería</div>
-        <div class="pm-item-sub">Permite que las alertas lleguen sin demora</div>
-      </div>
-      <div class="pm-status pm-pend" id="st-bateria">Pendiente</div>
-    </div>
-    <div class="pm-item">
-      <div class="pm-item-icon">📱</div>
-      <div style="flex:1">
-        <div class="pm-item-title">Pantalla completa</div>
-        <div class="pm-item-sub">Activa la pantalla al recibir una alerta</div>
-      </div>
-      <div class="pm-status pm-pend" id="st-pantalla">Pendiente</div>
-    </div>
-    <button class="btn-pm" id="btnPermisos">✅ ACTIVAR TODOS LOS PERMISOS</button>
-    <button class="btn-pm-skip" onclick="cerrarPermisos()">Continuar sin permisos completos</button>
-  </div>
-</div>
-
 <!-- LOGIN -->
 <div id="lp">
   <div class="lcard">
@@ -299,39 +211,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
     <div class="ltitle">ALERTA</div>
     <div class="lsub">UMAA IMSS AGUASCALIENTES</div>
     <div class="cbox">
-      <div style="color:var(--v);font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px">🏥 UMAA IMSS AGUASCALIENTES</div>
-      <div style="font-size:15px;font-weight:800;color:var(--v);letter-spacing:1px">Canal único institucional</div>
-      <div class="chint">Todos los usuarios conectados automáticamente</div>
+      <div style="color:var(--v);font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px">📡 CANAL DE GRUPO</div>
+      <div class="cnum" id="canalDisplay">----</div>
+      <div class="chint">Todos deben usar el mismo número</div>
     </div>
-    <input class="inp" id="loginNombre" type="text" placeholder="Nombre completo (ej: Dr. García)" autocomplete="name">
-    <input class="inp" id="loginArea" type="text" placeholder="Área / Servicio (ej: Urgencias)">
-
-    <div style="color:var(--t3);font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:8px;text-align:left">TU ROL EN LA UMAA</div>
-    <div id="rolesGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
-      <div class="rol-opt sel" onclick="selRol(this,'colaborador')" data-rol="colaborador">
-        <div style="font-size:24px;margin-bottom:4px">👤</div>
-        <div style="font-size:12px;font-weight:700;color:var(--t)">Colaborador</div>
-        <div style="font-size:10px;color:var(--t3)">Personal general</div>
-      </div>
-      <div class="rol-opt" onclick="selRol(this,'brigadista')" data-rol="brigadista">
-        <div style="font-size:24px;margin-bottom:4px">🦺</div>
-        <div style="font-size:12px;font-weight:700;color:var(--t)">Brigadista</div>
-        <div style="font-size:10px;color:var(--t3)">Equipo de emergencias</div>
-      </div>
-      <div class="rol-opt" onclick="selRol(this,'jefe')" data-rol="jefe">
-        <div style="font-size:24px;margin-bottom:4px">⭐</div>
-        <div style="font-size:12px;font-weight:700;color:var(--t)">Jefe de servicio</div>
-        <div style="font-size:10px;color:var(--t3)">Coordinación y mando</div>
-      </div>
-      <div class="rol-opt" onclick="selRol(this,'admin')" data-rol="admin">
-        <div style="font-size:24px;margin-bottom:4px">🏥</div>
-        <div style="font-size:12px;font-weight:700;color:var(--t)">Administración</div>
-        <div style="font-size:10px;color:var(--t3)">Dirección y control</div>
-      </div>
+    <div class="irow">
+      <input class="inp" id="canalInput" type="number" placeholder="Número de canal" inputmode="numeric" style="flex:1;margin-bottom:0">
+      <button class="bnuevo" onclick="generarCanal()">NUEVO</button>
     </div>
-    <input type="hidden" id="loginRol" value="colaborador">
-
-    <button class="bentrar" id="btnEntrar" onclick="doLogin()" ontouchend="event.preventDefault();doLogin()">▶ INGRESAR A ALERTA</button>
+    <input class="inp" id="loginNombre" type="text" placeholder="Tu nombre completo" autocomplete="name">
+    <input class="inp" id="loginArea"   type="text" placeholder="Área (ej: Urgencias)">
+    <select class="sel" id="loginRol">
+      <option value="colaborador">👤 Colaborador general</option>
+      <option value="brigadista">🦺 Brigadista</option>
+      <option value="jefe">⭐ Jefe de servicio</option>
+      <option value="admin">🏥 Administrador / Dirección</option>
+    </select>
+    <button class="bentrar" onclick="doLogin()">▶ INGRESAR AL CANAL</button>
     <div class="cst cst-ok" id="connSt">✅ Listo</div>
   </div>
 </div>
@@ -354,7 +250,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
       <div><div class="t-tt">ALERTA</div><div class="t-sb">UMAA IMSS AGS</div></div>
     </div>
     <div class="tb-r">
-      <div class="cpill"><div class="cdot"></div><span id="topRolBadge">-</span></div>
+      <div class="cpill"><div class="cdot"></div><span id="topCanal">-</span></div>
       <div style="background:var(--g);border:1px solid var(--bd);border-radius:99px;padding:4px 10px;font-size:11px;color:var(--t3);font-weight:600" id="topConn">1 🟢</div>
       <div class="uchip"><div class="uav" id="topAv">?</div><div class="unm" id="topNm">-</div></div>
     </div>
@@ -366,7 +262,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
     <div class="psub" id="homeSub">Conectado al canal</div>
     <div class="soswrap">
       <div class="soslbl">PRESIONA PARA ALERTAR</div>
-      <button class="sosbtn" id="sosBtn">
+      <button class="sosbtn" onclick="abrirSel('Incendio')">
         <span class="sosic">🚨</span>
         <span class="sostxt">ALERTAR</span>
       </button>
@@ -389,10 +285,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
     <div class="card">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <span style="font-size:20px">💬</span>
-        <div style="flex:1"><div style="font-size:14px;font-weight:800">Chat de emergencia</div><div style="font-size:11px;color:var(--t3)">UMAA AGS · Tiempo real</div></div>
+        <div style="flex:1"><div style="font-size:14px;font-weight:800">Chat de emergencia</div><div style="font-size:11px;color:var(--t3)">Canal <span id="homeCanal">-</span></div></div>
         <button class="bsmv" onclick="goTo('chat')">Abrir</button>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div class="sgrid">
         <div class="scard"><div class="snum" style="color:var(--v)" id="statSalvo">0</div><div class="slbl">A SALVO</div></div>
         <div class="scard"><div class="snum" style="color:#ff9800" id="statEvac">0</div><div class="slbl">EVACUANDO</div></div>
         <div class="scard"><div class="snum" style="color:var(--r)" id="statAyuda">0</div><div class="slbl">AYUDA</div></div>
@@ -443,28 +339,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
     <div class="fsec">
       <span class="flbl">ZONA AFECTADA</span>
       <input class="finp" type="text" id="fZona" placeholder="Ej: Urgencias — Piso 2">
-      <span class="flbl" style="margin-top:4px">PERSONAL INVOLUCRADO</span>
-      <div>
-        <span class="chip on" onclick="this.classList.toggle('on')">Todo el hospital</span>
-        <span class="chip" onclick="this.classList.toggle('on')">Urgencias</span>
-        <span class="chip" onclick="this.classList.toggle('on')">Laboratorio</span>
-        <span class="chip" onclick="this.classList.toggle('on')">Admisión</span>
-        <span class="chip" onclick="this.classList.toggle('on')">Brigadistas</span>
-        <span class="chip" onclick="this.classList.toggle('on')">Jefes de servicio</span>
-      </div>
     </div>
     <div class="fsec">
       <span class="flbl">NOTIFICACIONES AUTOMÁTICAS</span>
-      <div class="trow"><div class="trlbl">📅 7 días antes</div><span class="ton">ON</span></div>
-      <div class="trow"><div class="trlbl">📅 3 días antes</div><span class="ton">ON</span></div>
-      <div class="trow"><div class="trlbl">🔔 Un día antes · 7 am</div><span class="ton">ON</span></div>
+      <div class="trow"><div class="trlbl">📅 Un día antes · 7 am</div><span class="ton">ON</span></div>
       <div class="trow"><div class="trlbl">⏰ Día del simulacro · 7 am</div><span class="ton">ON</span></div>
       <div class="trow"><div class="trlbl">🔔 30 minutos antes</div><span class="ton">ON</span></div>
-      <div class="trow"><div class="trlbl">🔊 Hora exacta · todos los celulares</div><span class="talways">AUTOMÁTICO</span></div>
-    </div>
-    <div style="background:var(--rl);border:1.5px solid var(--rm);border-radius:12px;padding:12px 14px;display:flex;gap:10px;margin-bottom:14px">
-      <span style="font-size:18px">🔊</span>
-      <span style="font-size:12px;color:var(--r);line-height:1.6"><strong>A la hora exacta</strong> la alerta sona automáticamente en todos los celulares del canal — sonido por 30 segundos hasta que el usuario responda.</span>
+      <div class="trow"><div class="trlbl">🔊 Hora exacta · sonido 30 seg</div><span class="talways">AUTOMÁTICO</span></div>
     </div>
     <button class="br" onclick="guardarSim()">📅 GUARDAR Y PROGRAMAR</button>
     <button class="bo" onclick="goTo('simulacros')">Cancelar</button>
@@ -478,10 +359,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
       <div class="chathdr">
         <div class="cdot"></div>
         <div class="chathdrt">Canal <span id="chatN">-</span></div>
-        <span style="font-size:11px;color:var(--v)" id="chatConn">En línea</span>
+        <span style="font-size:11px;color:var(--v)">En línea</span>
       </div>
       <div class="chatmsgs" id="chatMsgs">
-        <div class="msys">Chat en tiempo real — los mensajes llegan a todos del canal</div>
+        <div class="msys">Chat en tiempo real — mensajes a todos del canal</div>
       </div>
       <div class="chatir">
         <input class="chatinp" id="chatInput" type="text" placeholder="Escribe un mensaje..." onkeydown="if(event.key==='Enter')enviarMsg()">
@@ -544,18 +425,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
   </div>
 </div>
 
-<!-- OVERLAY ALERTA — NO SE PUEDE CERRAR SIN RESPONDER -->
+<!-- OVERLAY ALERTA -->
 <div id="aov">
-  <div class="countdown-wrap">
-    <div class="countdown-ring">
-      <svg class="countdown-svg" width="70" height="70" viewBox="0 0 70 70">
-        <circle class="countdown-track" cx="35" cy="35" r="30"/>
-        <circle class="countdown-bar" id="cdBar" cx="35" cy="35" r="30"
-          stroke-dasharray="188.5" stroke-dashoffset="0"/>
+  <div class="cdwrap">
+    <div class="cdring">
+      <svg class="cdsvg" width="70" height="70" viewBox="0 0 70 70">
+        <circle class="cdtrack" cx="35" cy="35" r="30"/>
+        <circle class="cdbar" id="cdBar" cx="35" cy="35" r="30" stroke-dasharray="188.5" stroke-dashoffset="0"/>
       </svg>
-      <div class="countdown-num" id="cdNum">30</div>
+      <div class="cdnum" id="cdNum">30</div>
     </div>
-    <div class="countdown-lbl">SEGUNDOS</div>
+    <div class="cdlbl">SEGUNDOS</div>
   </div>
   <div class="ovcirc" id="ovCirc">🔥</div>
   <div class="ovmodo" id="ovModo">EMERGENCIA REAL</div>
@@ -573,13 +453,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
     <button class="ovbtn" onclick="responder('ayuda')">⚠️ NECESITO AYUDA</button>
   </div>
 </div>
-<!-- Firebase compat SDK — no requiere imports, funciona en todos los navegadores -->
+
+<!-- Firebase compat SDK — funciona en todos los navegadores y móviles -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
-
 <script>
-const FB = {
+var FB_CFG = {
   apiKey:"AIzaSyAgA_6uXxFvHsdcmgRW7faI2dkVm7weqZc",
   authDomain:"alerta-umaa.firebaseapp.com",
   projectId:"alerta-umaa",
@@ -588,173 +468,100 @@ const FB = {
   appId:"1:1026222287592:web:80edd883f06e4689daf75d",
   databaseURL:"https://alerta-umaa-default-rtdb.firebaseio.com"
 };
-const VAPID = "BJ-lY5P8UAWHbnP1lREfK05ku0t0gPWw4Es1sTig-dTyUPke_MNmloLt9NlIxkMiw1SSGwLOFY4kRv8txaySEoY";
-const CANAL_UMAA = 'UMAA-AGS-2026';
-
-firebase.initializeApp(FB);
-const db = firebase.database();
-let messaging = null;
+var VAPID = "BJ-lY5P8UAWHbnP1lREfK05ku0t0gPWw4Es1sTig-dTyUPke_MNmloLt9NlIxkMiw1SSGwLOFY4kRv8txaySEoY";
+firebase.initializeApp(FB_CFG);
+var db = firebase.database();
 
 // ESTADO
-let miNombre='', miArea='', miRol='', miCanal=CANAL_UMAA;
-let modoActual='real', tipoSel='Incendio', tipoForm='Incendio';
-let stats={salvo:0,evac:0,ayuda:0}, chatUnread=0, screenActual='inicio';
-let sonarTimer=null, countdownTimer=null;
-let alertasRef=null, chatFBRef=null, simsRef=null, presRef=null;
-let simsCache={}, notifEnviadas=new Set();
-let wakeLock=null;
-
-// WAKE LOCK
-async function pedirWakeLock(){
-  try{ if('wakeLock' in navigator) wakeLock=await navigator.wakeLock.request('screen'); }catch(e){}
-}
-function liberarWakeLock(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } }catch(e){} }
+var miNombre='', miArea='', miRol='', miCanal='';
+var modoActual='real', tipoSel='Incendio', tipoForm='Incendio';
+var stats={salvo:0,evac:0,ayuda:0}, chatUnread=0, screenActual='inicio';
+var sonarTimer=null, countdownTimer=null;
+var alertasRef=null, chatFBRef=null, simsRef=null;
+var simsCache={}, notifEnviadas={};
+var wakeLock=null;
 
 // INIT
 window.addEventListener('load', function(){
   generarCanal();
   var fd=new Date(); fd.setDate(fd.getDate()+7);
   document.getElementById('fFecha').value=fd.toISOString().split('T')[0];
-  if(!localStorage.getItem('alerta-permisos')){
-    document.getElementById('permisosModal').classList.add('show');
-  }
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js').catch(function(e){ console.warn('SW:',e); });
-  }
-  var params=new URLSearchParams(window.location.search);
-  if(params.get('alerta')==='1'){
-    window._pendingAlerta={
-      subtipo:params.get('tipo'), modo:params.get('modo')||'real',
-      zona:params.get('zona'), reportadoPor:params.get('quien'),
-      hora:params.get('hora'), canal:params.get('canal')
-    };
+    navigator.serviceWorker.register('sw.js').catch(function(){});
   }
 });
 
-// CANAL DISPLAY
+// CANAL
 function generarCanal(){
-  document.getElementById('canalDisplay') && (document.getElementById('canalDisplay').textContent='UMAA-AGS-2026');
-}
-
-// PERMISOS
-async function activarPermisos(){
-  try{
-    var perm=await Notification.requestPermission();
-    var st=document.getElementById('st-notif');
-    if(perm==='granted'){ st.textContent='✓ Activo'; st.className='pm-status pm-ok'; }
-    else { st.textContent='Denegado'; st.className='pm-status pm-no'; }
-  }catch(e){}
-  document.getElementById('st-bateria').textContent='✓ Activo';
-  document.getElementById('st-bateria').className='pm-status pm-ok';
-  document.getElementById('st-pantalla').textContent='wakeLock' in navigator ? '✓ Activo' : 'No disponible';
-  document.getElementById('st-pantalla').className='pm-status '+('wakeLock' in navigator ? 'pm-ok':'pm-no');
-  localStorage.setItem('alerta-permisos','1');
-  setTimeout(cerrarPermisos, 1200);
-}
-
-function cerrarPermisos(){
-  document.getElementById('permisosModal').classList.remove('show');
-  localStorage.setItem('alerta-permisos','1');
+  var n=Math.floor(1000+Math.random()*9000);
+  document.getElementById('canalInput').value=n;
+  document.getElementById('canalDisplay').textContent=n;
 }
 
 // LOGIN
-function selRol(el, rol){
-  document.querySelectorAll('.rol-opt').forEach(function(b){ b.classList.remove('sel'); });
-  el.classList.add('sel');
-  document.getElementById('loginRol').value = rol;
-}
-
 function doLogin(){
-  var nombre = (document.getElementById('loginNombre').value||'').trim();
-  var area   = (document.getElementById('loginArea').value||'').trim();
-  var rol    = document.getElementById('loginRol').value || 'colaborador';
-  if(!nombre){ alert('Por favor escribe tu nombre completo.'); return; }
-  if(!area)  { alert('Por favor escribe tu área o servicio.'); return; }
-
-  miNombre=nombre; miArea=area; miRol=rol; miCanal=CANAL_UMAA;
-
-  var rolIC={colaborador:'👤',brigadista:'🦺',jefe:'⭐',admin:'🏥'};
+  var canal=(document.getElementById('canalInput').value||'').toString().trim();
+  var nombre=(document.getElementById('loginNombre').value||'').toString().trim();
+  var area=(document.getElementById('loginArea').value||'').toString().trim();
+  var rol=document.getElementById('loginRol').value||'colaborador';
+  if(!canal){ alert('Escribe un número de canal.'); return; }
+  if(!nombre){ alert('Escribe tu nombre completo.'); return; }
+  if(!area){ alert('Escribe tu área o servicio.'); return; }
+  miCanal=canal; miNombre=nombre; miArea=area; miRol=rol;
   var ini=nombre.split(' ').filter(Boolean).map(function(p){return p[0];}).join('').toUpperCase().substr(0,2)||'U';
   document.getElementById('topAv').textContent=ini;
   document.getElementById('topNm').textContent=nombre;
-  document.getElementById('topRolBadge').textContent=(rolIC[rol]||'👤')+' '+rol;
-  document.getElementById('homeCanal').textContent='UMAA AGS';
-  document.getElementById('chatCanal').textContent='UMAA AGS';
-  document.getElementById('chatN').textContent='UMAA AGS';
-
-  // Ocultar login — todas las formas posibles
-  var lp=document.getElementById('lp');
-  lp.style.display='none';
-  lp.style.visibility='hidden';
-  lp.hidden=true;
+  document.getElementById('topCanal').textContent='Canal '+canal;
+  document.getElementById('homeCanal').textContent=canal;
+  document.getElementById('chatCanal').textContent=canal;
+  document.getElementById('chatN').textContent=canal;
+  document.getElementById('lp').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('botNav').style.display='grid';
-
-  // FCM en segundo plano
-  iniciarFCM().catch(function(e){ console.warn('FCM:',e); });
-  conectarDB();
-
-  if(window._pendingAlerta){
-    setTimeout(function(){ mostrarAlerta(window._pendingAlerta); window._pendingAlerta=null; }, 800);
-  }
+  conectarDB(canal, nombre, area, rol);
 }
 
-// FCM
-async function iniciarFCM(){
-  try{
-    if(Notification.permission!=='granted') return;
-    messaging = firebase.messaging();
-    var swReg = await navigator.serviceWorker.ready;
-    var token = await messaging.getToken({vapidKey:VAPID, serviceWorkerRegistration:swReg});
-    if(token){
-      db.ref('canales/'+miCanal+'/tokens/'+miNombre.replace(/[.#$[\]]/g,'_'))
-        .set({token:token, nombre:miNombre, area:miArea, rol:miRol, ts:Date.now()});
-    }
-    messaging.onMessage(function(payload){
-      var d=payload.data||{};
-      if(d.subtipo) mostrarAlerta(d);
-    });
-  }catch(e){ console.warn('FCM error:',e.message); }
-}
-
-// DB
-function conectarDB(){
-  presRef = db.ref('canales/'+miCanal+'/presencia/'+miNombre.replace(/[.#$[\]]/g,'_'));
-  presRef.set({nombre:miNombre, area:miArea, rol:miRol, ts:Date.now()});
+// FIREBASE DB
+function conectarDB(canal, nombre, area, rol){
+  var presRef=db.ref('canales/'+canal+'/presencia/'+nombre.replace(/[.#$[\]]/g,'_'));
+  presRef.set({nombre:nombre, area:area, rol:rol, ts:Date.now()});
   presRef.onDisconnect().remove();
 
-  db.ref('canales/'+miCanal+'/presencia').on('value', function(snap){
+  var rolIC={colaborador:'👤',brigadista:'🦺',jefe:'⭐',admin:'🏥'};
+  var rolCL={colaborador:'#1a8a4a',brigadista:'#ff9800',jefe:'#cc2222',admin:'#8844cc'};
+
+  db.ref('canales/'+canal+'/presencia').on('value', function(snap){
     var users=Object.values(snap.val()||{});
     document.getElementById('topConn').textContent=users.length+' 🟢';
     document.getElementById('homeSub').textContent=users.length+' persona'+(users.length!==1?'s':'')+' conectada'+(users.length!==1?'s':'')+' ahora';
-    var rolIC={colaborador:'👤',brigadista:'🦺',jefe:'⭐',admin:'🏥'};
-    var rolCL={colaborador:'var(--v)',brigadista:'#ff9800',jefe:'var(--r)',admin:'#8844cc'};
-    document.getElementById('usersLive').innerHTML=
+    document.getElementById('usersLive').innerHTML=users.length?
       users.map(function(u){
-        return '<div class="ulchip" style="border-color:'+( rolCL[u.rol]||'var(--vm)')+';background:white;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 12px">'+
-          '<div style="display:flex;align-items:center;gap:5px"><span>'+(rolIC[u.rol]||'👤')+'</span><span style="font-size:12px;font-weight:700;color:var(--t)">'+u.nombre+'</span></div>'+
-          '<div style="font-size:10px;color:var(--t3);margin-left:20px">'+u.area+' · '+u.rol+'</div></div>';
-      }).join('') || '<div class="ulchip"><div class="uldot"></div>Solo tú</div>';
+        return '<div class="ulchip" style="border-color:'+(rolCL[u.rol]||'#1a8a4a')+'">'+
+          '<span>'+(rolIC[u.rol]||'👤')+'</span>'+
+          '<div><div style="font-size:11px;font-weight:700">'+u.nombre+'</div>'+
+          '<div style="font-size:9px;opacity:0.7">'+u.area+'</div></div></div>';
+      }).join('') :
+      '<div class="ulchip"><div class="uldot"></div>Solo tú</div>';
   });
 
   // ALERTAS — solo nuevas
-  alertasRef = db.ref('canales/'+miCanal+'/alertas');
-  var alertasPrimer=true;
-  alertasRef.once('value', function(){ alertasPrimer=false; });
+  alertasRef=db.ref('canales/'+canal+'/alertas');
+  var apFirst=true;
+  alertasRef.once('value', function(){ apFirst=false; });
   alertasRef.on('child_added', function(snap){
-    if(alertasPrimer) return;
+    if(apFirst) return;
     var m=snap.val();
-    if(m && m.reportadoPor!==miNombre) mostrarAlerta(m);
+    if(m && m.reportadoPor!==nombre) mostrarAlerta(m);
   });
 
   // CHAT — solo nuevos
-  chatFBRef = db.ref('canales/'+miCanal+'/chat');
-  var chatPrimer=true;
-  chatFBRef.once('value', function(){ chatPrimer=false; });
+  chatFBRef=db.ref('canales/'+canal+'/chat');
+  var cpFirst=true;
+  chatFBRef.once('value', function(){ cpFirst=false; });
   chatFBRef.on('child_added', function(snap){
-    if(chatPrimer) return;
+    if(cpFirst) return;
     var m=snap.val();
-    if(m && m.nombre!==miNombre){
+    if(m && m.nombre!==nombre){
       agregarMsgChat(m.nombre,m.area,m.texto,m.hora,false);
       if(screenActual!=='chat'){
         chatUnread++;
@@ -765,7 +572,7 @@ function conectarDB(){
   });
 
   // SIMULACROS
-  simsRef = db.ref('canales/'+miCanal+'/simulacros');
+  simsRef=db.ref('canales/'+canal+'/simulacros');
   simsRef.on('value', function(snap){ simsCache=snap.val()||{}; renderSims(simsCache); });
 
   checkSchedule();
@@ -778,32 +585,33 @@ function checkSchedule(){
   var hoy=now.toISOString().split('T')[0];
   var man=new Date(now); man.setDate(man.getDate()+1);
   var manStr=man.toISOString().split('T')[0];
-  var hh=now.getHours().toString().padStart(2,'0');
-  var mm=now.getMinutes().toString().padStart(2,'0');
-  var horaNow=hh+':'+mm;
+  var hh=String(now.getHours()).padStart(2,'0');
+  var mm2=String(now.getMinutes()).padStart(2,'0');
+  var horaNow=hh+':'+mm2;
   var IC={Incendio:'🔥',Sismo:'📡',Derrame:'💧','Cód. Rojo':'🚑','F. Eléctrica':'⚡',Amenaza:'🛡️'};
   Object.values(simsCache).forEach(function(s){
     var k=String(s.ts||s.fecha+s.hora);
-    if(s.fecha===manStr&&horaNow==='07:00'&&!notifEnviadas.has(k+'_1d')){
-      notifEnviadas.add(k+'_1d');
+    if(s.fecha===manStr&&horaNow==='07:00'&&!notifEnviadas[k+'_1d']){
+      notifEnviadas[k+'_1d']=1;
       mostrarBanner((IC[s.tipo]||'🛡️')+' Mañana: Simulacro de '+s.tipo,'Mañana a las '+s.hora+' hrs · '+s.zona,IC[s.tipo]||'🛡️');
       sonarFuerte('sim'); vibrar();
     }
-    if(s.fecha===hoy&&horaNow==='07:00'&&!notifEnviadas.has(k+'_7am')){
-      notifEnviadas.add(k+'_7am');
-      mostrarBanner((IC[s.tipo]||'🛡️')+' HOY: Simulacro de '+s.tipo,'Hoy a las '+s.hora+' hrs · '+s.zona,IC[s.tipo]||'🛡️');
+    if(s.fecha===hoy&&horaNow==='07:00'&&!notifEnviadas[k+'_7am']){
+      notifEnviadas[k+'_7am']=1;
+      mostrarBanner((IC[s.tipo]||'🛡️')+' HOY simulacro: '+s.tipo,'Hoy a las '+s.hora+' hrs · '+s.zona,IC[s.tipo]||'🛡️');
       sonarFuerte('sim'); vibrar();
     }
     if(s.fecha===hoy){
-      var sh=parseInt(s.hora.split(':')[0]), sm=parseInt(s.hora.split(':')[1]);
-      var simMin=sh*60+sm, nowMin=now.getHours()*60+now.getMinutes();
-      if(nowMin===simMin-30&&!notifEnviadas.has(k+'_30m')){
-        notifEnviadas.add(k+'_30m');
+      var pts=s.hora.split(':');
+      var simMin=parseInt(pts[0])*60+parseInt(pts[1]);
+      var nowMin=now.getHours()*60+now.getMinutes();
+      if(nowMin===simMin-30&&!notifEnviadas[k+'_30m']){
+        notifEnviadas[k+'_30m']=1;
         mostrarBanner((IC[s.tipo]||'🛡️')+' Simulacro en 30 min',s.tipo+' a las '+s.hora+' · '+s.zona,IC[s.tipo]||'🛡️');
         sonarFuerte('sim'); vibrar();
       }
-      if(horaNow===s.hora&&!notifEnviadas.has(k+'_inicio')){
-        notifEnviadas.add(k+'_inicio');
+      if(horaNow===s.hora&&!notifEnviadas[k+'_inicio']){
+        notifEnviadas[k+'_inicio']=1;
         var hora=now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
         var data={subtipo:s.tipo,modo:'sim',zona:s.zona,reportadoPor:'Sistema automático',area:'Agenda',hora:hora,canal:miCanal,ts:Date.now()};
         alertasRef.push(data);
@@ -875,29 +683,23 @@ function mostrarAlerta(msg){
   document.getElementById('ovZona').textContent=msg.zona||'-';
   document.getElementById('ovReport').textContent=(msg.reportadoPor||'-')+' · '+(msg.area||'-');
   document.getElementById('ovHora').textContent=msg.hora||'-';
-  document.getElementById('ovCanal').textContent='UMAA AGS';
+  document.getElementById('ovCanal').textContent='Canal '+(msg.canal||miCanal);
   agregarMsgSis((esReal?'🚨 EMERGENCIA REAL':'🟢 SIMULACRO')+': '+msg.subtipo+' en '+msg.zona+' · '+msg.reportadoPor+' · '+msg.hora, esReal);
   iniciarCountdown(30, esReal);
 }
 
-function iniciarCountdown(segundos, esReal){
+function iniciarCountdown(seg, esReal){
   pararSonido();
   if(countdownTimer) clearInterval(countdownTimer);
   sonarFuerte(esReal?'real':'sim');
   vibrar();
-  var restantes=segundos;
-  var circ=188.5;
-  var bar=document.getElementById('cdBar');
-  var num=document.getElementById('cdNum');
+  var r=seg, circ=188.5;
+  var bar=document.getElementById('cdBar'), num=document.getElementById('cdNum');
   var tick=function(){
-    if(num) num.textContent=restantes;
-    if(bar) bar.style.strokeDashoffset=circ*(1-restantes/segundos);
-    if(restantes<=0){
-      clearInterval(countdownTimer); countdownTimer=null;
-      vibrar();
-      iniciarCountdown(30, esReal);
-    }
-    restantes--;
+    if(num) num.textContent=r;
+    if(bar) bar.style.strokeDashoffset=circ*(1-r/seg);
+    if(r<=0){ clearInterval(countdownTimer); countdownTimer=null; vibrar(); iniciarCountdown(30,esReal); }
+    r--;
   };
   tick();
   countdownTimer=setInterval(tick,1000);
@@ -911,27 +713,32 @@ function responder(estado){
   var em=estado==='salvo'?'✅ A SALVO':estado==='evacuando'?'🏃 EVACUANDO':'⚠️ NECESITA AYUDA';
   if(estado==='salvo') stats.salvo++;
   else if(estado==='evacuando') stats.evac++;
-  else if(estado==='ayuda') stats.ayuda++;
+  else stats.ayuda++;
   document.getElementById('statSalvo').textContent=stats.salvo;
-  if(document.getElementById('statEvac')) document.getElementById('statEvac').textContent=stats.evac;
+  document.getElementById('statEvac').textContent=stats.evac;
   document.getElementById('statAyuda').textContent=stats.ayuda;
   agregarMsgSis(miNombre+' ('+miArea+'): '+em+' · '+hora, false);
   mostrarBanner('Respuesta registrada ✓', em, '✅');
 }
 
+// WAKELOCK
+function pedirWakeLock(){
+  try{ if('wakeLock' in navigator) navigator.wakeLock.request('screen').then(function(wl){ wakeLock=wl; }).catch(function(){}); }catch(e){}
+}
+function liberarWakeLock(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } }catch(e){} }
+
 // SONIDO
 function sonarFuerte(modo){
   pararSonido();
   var esReal=modo==='real';
-  var n=0;
   var ciclo=function(){
     try{
       var ctx=new(window.AudioContext||window.webkitAudioContext)();
-      [[esReal?960:660,'sawtooth',1.0],[esReal?480:330,'square',0.6]].forEach(function(cfg){
+      [[esReal?960:660,'sawtooth',1.0],[esReal?480:330,'square',0.6]].forEach(function(c){
         var o=ctx.createOscillator(), g=ctx.createGain();
         o.connect(g); g.connect(ctx.destination);
-        o.type=cfg[1]; o.frequency.value=cfg[0];
-        g.gain.setValueAtTime(cfg[2],ctx.currentTime);
+        o.type=c[1]; o.frequency.value=c[0];
+        g.gain.setValueAtTime(c[2],ctx.currentTime);
         g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.45);
         o.start(ctx.currentTime); o.stop(ctx.currentTime+0.45);
       });
@@ -953,7 +760,6 @@ function enviarMsg(){
   agregarMsgChat('Tú',miArea,txt,hora,true);
   inp.value='';
 }
-
 function agregarMsgChat(nombre,area,texto,hora,mio){
   var msgs=document.getElementById('chatMsgs');
   var d=document.createElement('div');
@@ -966,7 +772,6 @@ function agregarMsgChat(nombre,area,texto,hora,mio){
   }
   msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
 }
-
 function agregarMsgSis(txt,esRojo){
   var msgs=document.getElementById('chatMsgs');
   var d=document.createElement('div');
@@ -974,7 +779,6 @@ function agregarMsgSis(txt,esRojo){
   d.textContent=txt;
   msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
 }
-
 function eh(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // BANNER
@@ -993,7 +797,6 @@ function selTF(el,tipo){
   document.querySelectorAll('#tfGrid .tfb').forEach(function(b){ b.classList.remove('sel'); });
   el.classList.add('sel');
 }
-
 function guardarSim(){
   var fecha=document.getElementById('fFecha').value;
   var hora=document.getElementById('fHora').value;
@@ -1005,7 +808,6 @@ function guardarSim(){
   mostrarBanner('Simulacro agendado 📅','Sonará automáticamente a la hora exacta.','🛡️');
   goTo('simulacros');
 }
-
 function renderSims(data){
   var lista=document.getElementById('listaSims');
   var sims=Object.values(data).sort(function(a,b){ return a.fecha>b.fecha?1:-1; });
@@ -1028,7 +830,8 @@ function renderSims(data){
       '<span class="simbadge bprox">'+dias+' días</span>';
     var cls='simcard'+(isHoy?' hoy':(!past&&(isMan||dias<=7))?' prox':'');
     var notif=!past?'<div class="notifrow"><span>🔊 Hora exacta: alerta automática a todos</span></div>':'';
-    return '<div class="'+cls+'"><div class="simtop"><div class="simic" style="background:'+(CL[s.tipo]||'#f5f5f5')+'">'+(IC[s.tipo]||'🛡️')+'</div>'+
+    return '<div class="'+cls+'"><div class="simtop">'+
+      '<div class="simic" style="background:'+(CL[s.tipo]||'#f5f5f5')+'">'+(IC[s.tipo]||'🛡️')+'</div>'+
       '<div style="flex:1"><div class="simtitle">Simulacro de '+eh(s.tipo)+'</div>'+
       '<div class="simfecha">'+fs+' · '+s.hora+' hrs</div>'+
       (s.desc?'<div style="font-size:11px;color:var(--t3);margin-top:3px">'+eh(s.desc)+'</div>':'')+
