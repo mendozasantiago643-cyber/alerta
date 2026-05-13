@@ -617,6 +617,8 @@ function checkSchedule(){
         var hora=now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
         var data={subtipo:s.tipo,modo:'sim',zona:s.zona,reportadoPor:'Sistema automático',area:'Agenda',hora:hora,canal:miCanal,ts:Date.now()};
         alertasRef.push(data);
+        enviarNtfy(data);
+        enviarFCM(data);
         mostrarAlerta(data);
       }
     }
@@ -667,7 +669,12 @@ function confirmarAlerta(){
   cerrarSel();
   var hora=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
   var data={subtipo:tipoSel,modo:modoActual,zona:miArea,reportadoPor:miNombre,area:miArea,hora:hora,canal:miCanal,ts:Date.now()};
+  // 1. Firebase Realtime DB — para celulares con app abierta
   alertasRef.push(data);
+  // 2. ntfy — para celulares con app cerrada (requiere app ntfy instalada)
+  enviarNtfy(data);
+  // 3. FCM heredado — si está configurado
+  enviarFCM(data);
   mostrarAlerta(data);
 }
 
@@ -837,6 +844,60 @@ function vibrar(){
     }
   }catch(e){}
 }
+
+// ── NTFY — notificaciones push aunque la app esté cerrada ──
+var NTFY_TOPIC = 'alerta-umaa-ags-2026';
+
+function enviarNtfy(msg){
+  var esReal = msg.modo==='real';
+  var titulo = esReal
+    ? '🚨 EMERGENCIA REAL — '+(msg.subtipo||'ALERTA').toUpperCase()
+    : '🛡️ SIMULACRO — '+(msg.subtipo||'').toUpperCase();
+  var cuerpo = (msg.zona||'')+' · '+(msg.hora||'')+' · Reportado por '+(msg.reportadoPor||'');
+  fetch('https://ntfy.sh/'+NTFY_TOPIC, {
+    method:'POST',
+    headers:{
+      'Title': titulo,
+      'Priority': esReal ? 'urgent' : 'high',
+      'Tags': esReal ? 'rotating_light,hospital' : 'shield,hospital',
+      'Content-Type':'text/plain; charset=utf-8'
+    },
+    body: cuerpo
+  }).catch(function(e){ console.warn('ntfy:',e); });
+}
+
+// ── FCM HEREDADO — activar cuando se habilite la API ──
+var FCM_SERVER_KEY = '';
+
+function enviarFCM(msg){
+  if(!FCM_SERVER_KEY) return;
+  var esReal = msg.modo==='real';
+  db.ref('canales/'+miCanal+'/tokens').once('value', function(snap){
+    var tokens=Object.values(snap.val()||{}).map(function(t){return t.token;}).filter(Boolean);
+    tokens.forEach(function(token){
+      fetch('https://fcm.googleapis.com/fcm/send',{
+        method:'POST',
+        headers:{
+          'Authorization':'key='+FCM_SERVER_KEY,
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          to:token,
+          priority:'high',
+          notification:{
+            title:esReal?'🚨 EMERGENCIA REAL — '+(msg.subtipo||'').toUpperCase():'🛡️ SIMULACRO — '+(msg.subtipo||'').toUpperCase(),
+            body:(msg.zona||'')+' · '+(msg.hora||'')+' · '+(msg.reportadoPor||''),
+            sound:'default'
+          },
+          data:{subtipo:msg.subtipo||'',modo:msg.modo||'real',zona:msg.zona||'',reportadoPor:msg.reportadoPor||'',hora:msg.hora||'',canal:msg.canal||''},
+          android:{priority:'high',notification:{channel_id:'alerta_emergencia',priority:'max'}},
+          apns:{headers:{'apns-priority':'10'},payload:{aps:{sound:'default','content-available':1}}}
+        })
+      }).catch(function(e){ console.warn('FCM:',e); });
+    });
+  });
+}
+
 
 // CHAT
 function enviarMsg(){
