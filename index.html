@@ -518,6 +518,8 @@ function doLogin(){
   document.getElementById('lp').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('botNav').style.display='grid';
+  // Pedir permisos de notificación para segundo plano
+  pedirPermisos();
   conectarDB(canal, nombre, area, rol);
 }
 
@@ -685,6 +687,11 @@ function mostrarAlerta(msg){
   document.getElementById('ovHora').textContent=msg.hora||'-';
   document.getElementById('ovCanal').textContent='Canal '+(msg.canal||miCanal);
   agregarMsgSis((esReal?'🚨 EMERGENCIA REAL':'🟢 SIMULACRO')+': '+msg.subtipo+' en '+msg.zona+' · '+msg.reportadoPor+' · '+msg.hora, esReal);
+  // Notificación nativa — enciende pantalla en segundo plano
+  notifNativa(
+    esReal ? '🚨 EMERGENCIA REAL — '+(msg.subtipo||'').toUpperCase() : '🛡️ SIMULACRO — '+(msg.subtipo||'').toUpperCase(),
+    (msg.zona||'')+' · '+(msg.hora||'')+' · '+(msg.reportadoPor||'')
+  );
   iniciarCountdown(30, esReal);
 }
 
@@ -698,7 +705,16 @@ function iniciarCountdown(seg, esReal){
   var tick=function(){
     if(num) num.textContent=r;
     if(bar) bar.style.strokeDashoffset=circ*(1-r/seg);
-    if(r<=0){ clearInterval(countdownTimer); countdownTimer=null; vibrar(); iniciarCountdown(30,esReal); }
+    if(r<=0){
+      clearInterval(countdownTimer); countdownTimer=null;
+      // Vibrar de nuevo al reiniciar
+      vibrar();
+      // Reiniciar — sigue sonando hasta que el usuario responda
+      setTimeout(function(){ iniciarCountdown(seg, esReal); }, 500);
+      return;
+    }
+    // Vibrar cada 10 segundos para insistir
+    if(r % 10 === 0 && r < seg) vibrar();
     r--;
   };
   tick();
@@ -727,28 +743,100 @@ function pedirWakeLock(){
 }
 function liberarWakeLock(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } }catch(e){} }
 
-// SONIDO
+// PERMISOS PARA SEGUNDO PLANO
+function pedirPermisos(){
+  // 1. Notificaciones del sistema
+  if('Notification' in window && Notification.permission==='default'){
+    Notification.requestPermission();
+  }
+  // 2. WakeLock — mantener conexión viva aunque esté bloqueado
+  pedirWakeLock();
+  // 3. Service Worker para notificaciones en segundo plano
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  }
+}
+
+// NOTIFICACIÓN NATIVA DEL SISTEMA (para segundo plano)
+function notifNativa(titulo, cuerpo){
+  try{
+    if('Notification' in window && Notification.permission==='granted'){
+      var n = new Notification(titulo, {
+        body: cuerpo,
+        icon: 'icon-192.png',
+        badge: 'icon-192.png',
+        vibrate: [500,200,500,200,500,200,800],
+        requireInteraction: true, // No desaparece sola
+        silent: false
+      });
+      n.onclick = function(){ window.focus(); n.close(); };
+    }
+  }catch(e){}
+}
+
+// SONIDO FUERTE — dura hasta que el usuario responda
 function sonarFuerte(modo){
   pararSonido();
-  var esReal=modo==='real';
-  var ciclo=function(){
+  var esReal = modo==='real';
+  // Patrón de alerta: tono alto + tono bajo alternando, como sirena
+  var fase = 0;
+  var ciclo = function(){
     try{
-      var ctx=new(window.AudioContext||window.webkitAudioContext)();
-      [[esReal?960:660,'sawtooth',1.0],[esReal?480:330,'square',0.6]].forEach(function(c){
-        var o=ctx.createOscillator(), g=ctx.createGain();
-        o.connect(g); g.connect(ctx.destination);
-        o.type=c[1]; o.frequency.value=c[0];
-        g.gain.setValueAtTime(c[2],ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.45);
-        o.start(ctx.currentTime); o.stop(ctx.currentTime+0.45);
-      });
+      var ctx = new(window.AudioContext||window.webkitAudioContext)();
+      // Tono principal — oscila entre 2 frecuencias como sirena
+      var freqAlta = esReal ? 1200 : 800;
+      var freqBaja = esReal ? 600  : 400;
+      var freq = (fase % 2 === 0) ? freqAlta : freqBaja;
+      // Oscilador 1 — tono principal fuerte
+      var o1=ctx.createOscillator(), g1=ctx.createGain();
+      o1.connect(g1); g1.connect(ctx.destination);
+      o1.type = 'sawtooth';
+      o1.frequency.value = freq;
+      g1.gain.setValueAtTime(1.0, ctx.currentTime);
+      g1.gain.setValueAtTime(1.0, ctx.currentTime+0.18);
+      g1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.22);
+      o1.start(ctx.currentTime);
+      o1.stop(ctx.currentTime+0.22);
+      // Oscilador 2 — armónico para más volumen
+      var o2=ctx.createOscillator(), g2=ctx.createGain();
+      o2.connect(g2); g2.connect(ctx.destination);
+      o2.type = 'square';
+      o2.frequency.value = freq / 2;
+      g2.gain.setValueAtTime(0.7, ctx.currentTime);
+      g2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.22);
+      o2.start(ctx.currentTime);
+      o2.stop(ctx.currentTime+0.22);
+      // Oscilador 3 — sub-grave para vibración adicional
+      var o3=ctx.createOscillator(), g3=ctx.createGain();
+      o3.connect(g3); g3.connect(ctx.destination);
+      o3.type = 'sine';
+      o3.frequency.value = 80;
+      g3.gain.setValueAtTime(0.5, ctx.currentTime);
+      g3.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.22);
+      o3.start(ctx.currentTime);
+      o3.stop(ctx.currentTime+0.22);
     }catch(e){}
-    sonarTimer=setTimeout(ciclo,600);
+    fase++;
+    // Intervalo corto = sirena rápida e insistente
+    sonarTimer = setTimeout(ciclo, esReal ? 250 : 400);
   };
   ciclo();
 }
-function pararSonido(){ if(sonarTimer){ clearTimeout(sonarTimer); sonarTimer=null; } }
-function vibrar(){ try{ if(navigator.vibrate) navigator.vibrate([500,150,500,150,500,150,800]); }catch(e){} }
+
+function pararSonido(){
+  if(sonarTimer){ clearTimeout(sonarTimer); sonarTimer=null; }
+}
+
+// Vibración larga e insistente
+function vibrar(){
+  try{
+    if(navigator.vibrate){
+      // Patrón largo: vibra-pausa-vibra-pausa... 10 veces
+      navigator.vibrate([600,150,600,150,600,150,600,150,600,150,
+                         600,150,600,150,600,150,800,150,1000]);
+    }
+  }catch(e){}
+}
 
 // CHAT
 function enviarMsg(){
